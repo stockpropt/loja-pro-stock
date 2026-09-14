@@ -193,6 +193,12 @@
   }
   .field input:focus, .field select:focus{ outline:none; border-color:var(--accent); }
   .field input[type="file"]{ padding:10px 12px; font-size:.92rem; }
+  .field textarea{
+    width:100%; min-height:96px; padding:12px 15px; font-size:1.02rem; font-family:inherit;
+    border:1.5px solid var(--border); border-radius:12px; background:var(--card-bg); color:var(--ink);
+    resize:vertical;
+  }
+  .field textarea:focus{ outline:none; border-color:var(--accent); }
   .field-hint{ margin:6px 0 0; font-size:.82rem; color:var(--gray-600); }
   .save-btn{
     width:100%; min-height:54px; border:none; border-radius:12px; background:var(--accent); color:#fff;
@@ -295,6 +301,21 @@
       <label for="productStockNote">Nota de Stock - opcional</label>
       <input type="text" id="productStockNote" name="productStockNote" placeholder="Ex.: Última unidade">
       <p class="field-hint">Aparece por baixo do nome do produto. Deixe em branco para não mostrar.</p>
+    </div>
+    <div class="field">
+      <label for="productDescription">Descrição Detalhada - opcional</label>
+      <textarea id="productDescription" name="productDescription" placeholder="Descreva o produto: material, funcionalidades, dimensões, etc."></textarea>
+      <p class="field-hint">Aparece na montra por baixo do produto. Deixe em branco para não mostrar.</p>
+    </div>
+    <div class="field">
+      <label for="productSizes">Tamanhos Disponíveis - opcional</label>
+      <input type="text" id="productSizes" name="productSizes" placeholder="Ex.: S, M, L">
+      <p class="field-hint">Separe por vírgulas. Deixe em branco se não se aplicar a este produto.</p>
+    </div>
+    <div class="field">
+      <label for="productColors">Cores - opcional</label>
+      <input type="text" id="productColors" name="productColors" placeholder="Ex.: Preto, Branco, Azul">
+      <p class="field-hint">Separe por vírgulas. Deixe em branco se não se aplicar a este produto.</p>
     </div>
     <div class="field">
       <label for="productPhoto">Foto do Produto - opcional</label>
@@ -456,6 +477,9 @@
       document.getElementById('productOldPrice').value = (product.preco_antigo != null) ? product.preco_antigo : '';
       document.getElementById('productDiscountTag').value = product.etiqueta_desconto || '';
       document.getElementById('productStockNote').value = product.nota_stock || '';
+      document.getElementById('productDescription').value = product.descricao || '';
+      document.getElementById('productSizes').value = product.tamanhos || '';
+      document.getElementById('productColors').value = product.cores || '';
       document.getElementById('productPhoto').value = '';
       currentPhotoHint.hidden = !editingProductImage;
     } else {
@@ -491,6 +515,9 @@
     var precoAntigo = oldPriceRaw === '' ? null : parseFloat(oldPriceRaw);
     var etiquetaDesconto = document.getElementById('productDiscountTag').value.trim() || null;
     var notaStock = document.getElementById('productStockNote').value.trim() || null;
+    var descricao = document.getElementById('productDescription').value.trim() || null;
+    var tamanhos = document.getElementById('productSizes').value.trim() || null;
+    var cores = document.getElementById('productColors').value.trim() || null;
     var photoFile = document.getElementById('productPhoto').files[0] || null;
 
     var originalBtnText = productSaveBtn.textContent;
@@ -530,7 +557,10 @@
       condicao: condicao,
       preco_antigo: precoAntigo,
       etiqueta_desconto: etiquetaDesconto,
-      nota_stock: notaStock
+      nota_stock: notaStock,
+      descricao: descricao,
+      tamanhos: tamanhos,
+      cores: cores
     };
 
     if (editingProductId !== null){
