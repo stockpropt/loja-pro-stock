@@ -7,7 +7,8 @@
     --white:#ffffff; --gray-50:#f5f5f7; --gray-100:#ececee; --gray-200:#d5d5da;
     --gray-500:#86868b; --gray-600:#6e6e73; --ink:#1d1d1f; --border:#d9d9de; --card-bg:#ffffff;
     --accent:#0066cc; --accent-hover:#0055ab; --accent-soft:#e8f1fc;
-    --danger:#ff3b30; --danger-hover:#e0332a; --trust-green:#1c7c4d;
+    --danger:#ff3b30; --danger-hover:#e0332a; --trust-green:#1c7c4d; --trust-green-soft:#e3f5ea;
+    --prep-amber:#a3690a; --prep-amber-soft:#fdf1de; --ship-purple:#6d3ad1; --ship-purple-soft:#f1ecfc;
     --shadow-sm:0 1px 2px rgba(0,0,0,.06); --shadow-md:0 12px 28px rgba(0,0,0,.12);
     --bg-page:var(--white); --radius:18px;
   }
@@ -16,7 +17,8 @@
       --white:#000000; --gray-50:#161618; --gray-100:#1d1d1f; --gray-200:#38383c;
       --gray-500:#98989d; --gray-600:#a1a1a6; --ink:#f5f5f7; --border:#38383c; --card-bg:#161618;
       --accent:#2585ff; --accent-hover:#4c9bff; --accent-soft:#0f2440;
-      --danger:#ff453a; --danger-hover:#ff6259; --trust-green:#34d17c;
+      --danger:#ff453a; --danger-hover:#ff6259; --trust-green:#34d17c; --trust-green-soft:#0f2c1c;
+      --prep-amber:#e0a940; --prep-amber-soft:#3a2c0f; --ship-purple:#b592f5; --ship-purple-soft:#281f42;
       --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow-md:0 16px 32px rgba(0,0,0,.55);
       --bg-page:var(--white);
     }
@@ -25,7 +27,8 @@
     --white:#000000; --gray-50:#161618; --gray-100:#1d1d1f; --gray-200:#38383c;
     --gray-500:#98989d; --gray-600:#a1a1a6; --ink:#f5f5f7; --border:#38383c; --card-bg:#161618;
     --accent:#2585ff; --accent-hover:#4c9bff; --accent-soft:#0f2440;
-    --danger:#ff453a; --danger-hover:#ff6259; --trust-green:#34d17c;
+    --danger:#ff453a; --danger-hover:#ff6259; --trust-green:#34d17c; --trust-green-soft:#0f2c1c;
+    --prep-amber:#e0a940; --prep-amber-soft:#3a2c0f; --ship-purple:#b592f5; --ship-purple-soft:#281f42;
     --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow-md:0 16px 32px rgba(0,0,0,.55);
     --bg-page:var(--white);
   }
@@ -125,24 +128,38 @@
   }
   .product-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
   .product-details{ flex:1; min-width:0; }
-  .product-details h3{ margin:0 0 4px; font-size:1rem; font-weight:700; }
-  .product-details .price{ font-weight:800; font-variant-numeric:tabular-nums; }
-  .product-actions{ flex:none; display:flex; flex-direction:column; gap:8px; width:120px; }
-  .delete-btn, .edit-btn{
-    border:none; border-radius:12px; padding:0 14px;
-    font-weight:800; font-size:.8rem; cursor:pointer; min-height:52px; line-height:1.15;
+  .product-details h3{ margin:0 0 4px; font-size:1rem; font-weight:700; display:inline; }
+  .product-meta{ margin:0 0 4px; font-size:.78rem; color:var(--gray-500); }
+  .inactive-badge{
+    display:inline-block; margin-left:8px; padding:2px 8px; border-radius:999px;
+    background:var(--gray-200); color:var(--gray-600); font-size:.68rem; font-weight:800; vertical-align:middle;
+  }
+  .highlight-badge{
+    display:inline-block; margin-left:8px; padding:2px 8px; border-radius:999px;
+    background:var(--accent-soft); color:var(--accent); font-size:.68rem; font-weight:800; vertical-align:middle;
+  }
+  .product-details .price{ display:block; font-weight:800; font-variant-numeric:tabular-nums; }
+  .product-actions{ flex:none; display:grid; grid-template-columns:1fr 1fr; gap:8px; width:172px; }
+  .delete-btn, .edit-btn, .duplicate-btn, .toggle-active-btn{
+    border:none; border-radius:12px; padding:0 8px;
+    font-weight:800; font-size:.76rem; cursor:pointer; min-height:44px; line-height:1.15;
     transition:background .15s ease;
   }
   .delete-btn{ background:var(--danger); color:#fff; }
   .delete-btn:hover{ background:var(--danger-hover); }
   .edit-btn{ background:#48484a; color:#fff; }
   .edit-btn:hover{ background:#333335; }
+  .duplicate-btn{ background:var(--gray-100); color:var(--ink); }
+  .duplicate-btn:hover{ background:var(--gray-200); }
+  .toggle-active-btn.state-ativo{ background:var(--trust-green-soft); color:var(--trust-green); }
+  .toggle-active-btn.state-ativo:hover{ background:var(--trust-green); color:#fff; }
+  .toggle-active-btn.state-inativo{ background:var(--gray-200); color:var(--gray-600); }
+  .toggle-active-btn.state-inativo:hover{ background:var(--gray-500); color:#fff; }
   .empty-state{ color:var(--gray-500); text-align:center; padding:30px 10px; font-size:.95rem; }
 
   @media (max-width:420px){
     .product-row{ flex-wrap:wrap; }
-    .product-actions{ flex-direction:row; width:100%; }
-    .edit-btn, .delete-btn{ flex:1; min-height:48px; }
+    .product-actions{ width:100%; }
   }
 
   /* ---------- Raffle tab ---------- */
@@ -152,6 +169,26 @@
   }
   .raffle-summary .count{ color:var(--danger); font-variant-numeric:tabular-nums; }
   .raffle-hint{ margin:0 0 16px; font-size:.9rem; color:var(--gray-600); }
+  .raffle-config-card{
+    border:1px solid var(--border); border-radius:18px; padding:20px; margin-bottom:22px; background:var(--card-bg);
+  }
+  .raffle-config-header{
+    display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:4px;
+  }
+  .raffle-config-header h3{ margin:0; font-size:1.05rem; font-weight:800; }
+  .toggle-switch{ position:relative; display:inline-flex; flex:none; cursor:pointer; }
+  .toggle-switch input{ position:absolute; opacity:0; width:1px; height:1px; }
+  .toggle-track{
+    width:48px; height:28px; border-radius:999px; background:var(--gray-200); position:relative;
+    transition:background .15s ease; display:block;
+  }
+  .toggle-thumb{
+    position:absolute; top:2px; left:2px; width:24px; height:24px; border-radius:50%; background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.3); transition:transform .15s ease;
+  }
+  .toggle-switch input:checked + .toggle-track{ background:var(--trust-green); }
+  .toggle-switch input:checked + .toggle-track .toggle-thumb{ transform:translateX(20px); }
+  .toggle-switch input:focus-visible + .toggle-track{ outline:2.5px solid var(--accent); outline-offset:2px; }
   .admin-raffle-grid{
     display:grid; grid-template-columns:repeat(auto-fill,minmax(48px,1fr)); gap:8px;
   }
@@ -163,6 +200,47 @@
   }
   .admin-raffle-num:hover{ border-color:var(--accent); }
   .admin-raffle-num.sold{ background:var(--gray-200); border-color:var(--gray-200); color:var(--gray-600); }
+
+  /* ---------- Orders tab ---------- */
+  .order-card{
+    border:1px solid var(--border); border-radius:16px; padding:16px 18px; margin-bottom:12px; background:var(--card-bg);
+  }
+  .order-card-head{
+    display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:6px; flex-wrap:wrap;
+  }
+  .order-card-name{ font-weight:800; font-size:1.02rem; }
+  .order-card-date{ font-size:.8rem; color:var(--gray-500); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .order-card-contact{ margin:0 0 10px; font-size:.88rem; color:var(--gray-600); line-height:1.5; }
+  .order-card-items{ margin:0 0 12px; padding-left:18px; font-size:.9rem; }
+  .order-card-items li{ margin-bottom:2px; }
+  .order-card-foot{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:.9rem; flex-wrap:wrap; }
+  .order-card-total{ font-weight:800; font-variant-numeric:tabular-nums; }
+  .order-card-pay{
+    display:inline-flex; align-items:center; font-weight:700; font-size:.78rem; padding:4px 10px;
+    border-radius:999px; background:var(--accent-soft); color:var(--accent);
+  }
+
+  .order-card-status-row{ margin-bottom:10px; }
+  .order-status-select{
+    min-height:38px; padding:0 12px; font-size:.82rem; font-weight:700; font-family:inherit;
+    border-radius:999px; border:1.5px solid var(--border); cursor:pointer;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .order-status-select:focus{ outline:none; border-color:var(--accent); }
+  .order-status-select.status-pendente{ background:var(--gray-100); color:var(--gray-600); border-color:var(--gray-200); }
+  .order-status-select.status-confirmada{ background:var(--accent-soft); color:var(--accent); border-color:var(--accent-soft); }
+  .order-status-select.status-preparacao{ background:var(--prep-amber-soft); color:var(--prep-amber); border-color:var(--prep-amber-soft); }
+  .order-status-select.status-enviada{ background:var(--ship-purple-soft); color:var(--ship-purple); border-color:var(--ship-purple-soft); }
+  .order-status-select.status-entregue{ background:var(--trust-green-soft); color:var(--trust-green); border-color:var(--trust-green-soft); }
+
+  .order-card-actions{ margin-top:12px; display:flex; }
+  .order-whatsapp-btn{
+    display:inline-flex; align-items:center; gap:7px; border:none; border-radius:999px;
+    background:#25d366; color:#fff; font-weight:700; font-size:.85rem; padding:0 16px; min-height:42px;
+    cursor:pointer; text-decoration:none; transition:background .15s ease;
+  }
+  .order-whatsapp-btn:hover{ background:#1ebe5a; }
+  .order-whatsapp-btn svg{ width:17px; height:17px; flex:none; }
 
   /* ---------- Modal ---------- */
   .modal-overlay{
@@ -178,6 +256,9 @@
     transition:opacity .25s ease, transform .25s cubic-bezier(.32,.72,0,1);
   }
   .admin-modal.open{ opacity:1; transform:translate(-50%,-50%) scale(1); pointer-events:auto; }
+  /* Em ecrãs de computador há espaço de sobra - os modais ficam um pouco mais largos
+     em vez de ficarem sempre estreitos como no telemóvel. */
+  @media (min-width:640px){ .admin-modal{ width:540px; } }
   .admin-modal h2{ font-size:1.3rem; margin:0 0 20px; padding-right:40px; }
   .modal-close{
     position:absolute; top:18px; right:18px; width:42px; height:42px; border-radius:50%;
@@ -200,6 +281,41 @@
   }
   .field textarea:focus{ outline:none; border-color:var(--accent); }
   .field-hint{ margin:6px 0 0; font-size:.82rem; color:var(--gray-600); }
+  .field-label-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:7px; }
+  .field-label-row label{ margin-bottom:0; }
+  .manage-link{ border:none; background:none; color:var(--accent); font-size:.82rem; font-weight:700; cursor:pointer; padding:0; flex:none; }
+  .manage-link:hover{ text-decoration:underline; }
+  .new-entry-row{ display:flex; gap:8px; margin-top:8px; }
+  .new-entry-row input{
+    flex:1; min-width:0; min-height:44px; padding:0 12px; font-size:.95rem; font-family:inherit;
+    border:1.5px solid var(--border); border-radius:10px; background:var(--card-bg); color:var(--ink);
+  }
+  .new-entry-row input:focus{ outline:none; border-color:var(--accent); }
+  .new-entry-add, .new-entry-cancel{
+    min-height:44px; padding:0 14px; border-radius:10px; font-weight:700; font-size:.9rem; cursor:pointer;
+    border:1.5px solid var(--border); background:var(--card-bg); color:var(--ink); flex:none;
+  }
+  .new-entry-add{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .new-entry-add:hover{ background:var(--accent-hover); }
+  .new-entry-cancel:hover{ background:var(--gray-100); }
+  #manageListModalOverlay{ z-index:85; }
+  #manageListModal{ z-index:90; }
+  .manage-list-add-row{ display:flex; gap:8px; margin-bottom:18px; }
+  .manage-list-add-row input{
+    flex:1; min-width:0; min-height:48px; padding:0 14px; font-size:.98rem; font-family:inherit;
+    border:1.5px solid var(--border); border-radius:12px; background:var(--card-bg); color:var(--ink);
+  }
+  .manage-list-add-row input:focus{ outline:none; border-color:var(--accent); }
+  .manage-list-add-row .manage-list-add-btn{ width:auto; min-height:48px; padding:0 18px; margin-top:0; flex:none; }
+  .manage-list-items{ display:flex; flex-direction:column; gap:8px; max-height:320px; overflow-y:auto; }
+  .manage-list-item{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px;
+    border:1px solid var(--border); border-radius:12px;
+  }
+  .manage-list-item span{ font-weight:600; font-size:.95rem; word-break:break-word; }
+  .manage-list-item-delete{ border:none; background:none; color:var(--danger); font-size:.85rem; font-weight:700; cursor:pointer; flex:none; padding:4px 8px; }
+  .manage-list-item-delete:hover{ text-decoration:underline; }
+  .manage-list-empty{ color:var(--gray-600); font-size:.9rem; text-align:center; padding:16px 0; }
   .photo-preview-grid{ display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
   .photo-preview-item{
     position:relative; width:64px; height:64px; border-radius:10px; overflow:hidden;
@@ -216,6 +332,21 @@
     position:absolute; left:0; right:0; bottom:0; font-size:.6rem; font-weight:700; text-align:center;
     background:rgba(0,0,0,.55); color:#fff; padding:2px 0; letter-spacing:.02em;
   }
+  /* Grelha de fotos do formulário de produto - maior do que a do sorteio (só uma foto),
+     porque aqui dá para arrastar e reordenar, e cada foto tem um botão por baixo. */
+  #photoPreviewGrid .photo-preview-item{
+    width:96px; height:auto; display:flex; flex-direction:column; cursor:grab; touch-action:none;
+  }
+  #photoPreviewGrid .photo-preview-item:active{ cursor:grabbing; }
+  #photoPreviewGrid .photo-preview-item.dragging{ opacity:.4; }
+  #photoPreviewGrid .photo-preview-item.drag-over{ outline:2.5px solid var(--accent); outline-offset:2px; }
+  #photoPreviewGrid .photo-preview-thumb{ position:relative; width:100%; height:96px; flex:none; }
+  #photoPreviewGrid .photo-preview-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  #photoPreviewGrid .photo-preview-make-primary{
+    border:none; background:var(--gray-100); color:var(--ink); font-size:.68rem; font-weight:700;
+    padding:6px 4px; cursor:pointer; width:100%; border-top:1px solid var(--border);
+  }
+  #photoPreviewGrid .photo-preview-make-primary:hover{ background:var(--gray-200); }
   .save-btn{
     width:100%; min-height:54px; border:none; border-radius:12px; background:var(--accent); color:#fff;
     font-size:1.02rem; font-weight:800; cursor:pointer; margin-top:6px;
@@ -236,6 +367,7 @@
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.4" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/><circle cx="12" cy="15" r="1.5" fill="currentColor"/></symbol>
     <symbol id="i-box" viewBox="0 0 32 32"><path d="M16 3 4 9v14l12 6 12-6V9z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M4 9l12 6 12-6M16 15v14" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+    <symbol id="i-whatsapp" viewBox="0 0 32 32"><path fill="currentColor" d="M16.02 3C9.4 3 4 8.38 4 15c0 2.34.66 4.53 1.8 6.4L4 29l7.8-1.75A11.9 11.9 0 0 0 16.02 27C22.64 27 28 21.62 28 15S22.64 3 16.02 3Zm6.6 16.8c-.28.78-1.62 1.5-2.24 1.58-.6.08-1.32.11-2.14-.14-.5-.15-1.13-.36-1.95-.7-3.43-1.48-5.67-4.92-5.84-5.15-.17-.23-1.4-1.86-1.4-3.55s.87-2.5 1.18-2.85c.3-.34.66-.43.88-.43.22 0 .44 0 .63.01.2.01.47-.08.74.56.28.66.94 2.28 1.02 2.44.09.17.14.36.03.58-.11.23-.17.36-.33.56-.17.2-.35.44-.5.6-.17.17-.34.35-.15.68.2.34.86 1.42 1.85 2.3 1.27 1.13 2.34 1.48 2.68 1.65.34.17.54.14.74-.09.2-.22.86-1 1.09-1.35.23-.34.46-.28.77-.17.32.11 2 .95 2.34 1.12.34.17.57.26.65.4.09.15.09.86-.19 1.65Z"/></symbol>
   </defs>
 </svg>
 
@@ -245,6 +377,10 @@
     <h1 class="login-brand">PRO STOCK</h1>
     <p class="login-sub">Painel de gestão privado</p>
     <form id="loginForm" novalidate>
+      <div class="login-field">
+        <label for="adminEmail">Email</label>
+        <input type="email" id="adminEmail" name="adminEmail" autocomplete="username" placeholder="admin@exemplo.com" required>
+      </div>
       <div class="login-field">
         <label for="adminPassword">Palavra-passe</label>
         <input type="password" id="adminPassword" name="adminPassword" autocomplete="current-password" placeholder="Introduza a palavra-passe" required>
@@ -265,6 +401,7 @@
     <div class="admin-tabs" role="tablist" aria-label="Secções de gestão">
       <button class="admin-tab" role="tab" id="adminTabProdutos" aria-controls="painelProdutos" aria-selected="true" data-target="painelProdutos">Produtos</button>
       <button class="admin-tab" role="tab" id="adminTabRifa" aria-controls="painelRifa" aria-selected="false" data-target="painelRifa">Rifa</button>
+      <button class="admin-tab" role="tab" id="adminTabEncomendas" aria-controls="painelEncomendas" aria-selected="false" data-target="painelEncomendas">Encomendas</button>
     </div>
 
     <section id="painelProdutos" data-admin-panel role="tabpanel" aria-labelledby="adminTabProdutos">
@@ -273,12 +410,45 @@
     </section>
 
     <section id="painelRifa" data-admin-panel hidden role="tabpanel" aria-labelledby="adminTabRifa">
+      <div class="raffle-config-card">
+        <div class="raffle-config-header">
+          <h3>Definições do Sorteio</h3>
+          <label class="toggle-switch">
+            <input type="checkbox" id="raffleActiveToggle">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+        <p class="field-hint" id="raffleActiveHint">O sorteio está visível na loja.</p>
+        <div class="field">
+          <label for="raffleTitleInput">Título do Prémio</label>
+          <input type="text" id="raffleTitleInput" name="raffleTitleInput" placeholder="Ex.: Smart TV 50 Polegadas">
+        </div>
+        <div class="field">
+          <label for="rafflePriceInput">Preço por Número (€)</label>
+          <input type="number" id="rafflePriceInput" name="rafflePriceInput" min="0" step="0.01" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="raffleDescInput">Descrição Detalhada - opcional</label>
+          <textarea id="raffleDescInput" name="raffleDescInput" placeholder="Descreva o prémio: marca, modelo, características, etc."></textarea>
+        </div>
+        <div class="field">
+          <label for="rafflePhotoInput">Foto do Prémio - opcional</label>
+          <input type="file" id="rafflePhotoInput" name="rafflePhotoInput" accept="image/*">
+          <p class="field-hint">Escolha uma foto real do prémio a sortear.</p>
+          <div class="photo-preview-grid" id="rafflePhotoPreviewGrid"></div>
+        </div>
+        <button type="button" class="save-btn" id="raffleConfigSaveBtn">Guardar Definições do Sorteio</button>
+      </div>
       <div class="raffle-summary">
         <span>Números do sorteio</span>
         <span class="count" id="raffleSoldCount">0 de 100 vendidos</span>
       </div>
-      <p class="raffle-hint">Toque num número branco para o marcar como vendido. Toque num número cinzento para o libertar outra vez.</p>
+      <p class="raffle-hint">Toque num número branco para o marcar como vendido. Toque num número cinzento para o libertar outra vez. Passe o rato sobre um número vendido para ver quem o comprou.</p>
       <div class="admin-raffle-grid" id="adminRaffleGrid" role="group" aria-label="Gestão dos números do sorteio, de 1 a 100"></div>
+    </section>
+
+    <section id="painelEncomendas" data-admin-panel hidden role="tabpanel" aria-labelledby="adminTabEncomendas">
+      <div id="orderList"></div>
     </section>
   </main>
 </div>
@@ -302,6 +472,54 @@
         <option value="novo">Novo</option>
         <option value="usado">Usado</option>
       </select>
+    </div>
+    <div class="field">
+      <div class="field-label-row">
+        <label for="productCategory">Categoria - opcional</label>
+        <button type="button" class="manage-link" data-manage="categorias">Gerir categorias</button>
+      </div>
+      <select id="productCategory" name="productCategory">
+        <option value="">Sem categoria</option>
+      </select>
+      <div class="new-entry-row" id="newCategoryRow" hidden>
+        <input type="text" id="newCategoryInput" placeholder="Nome da nova categoria">
+        <button type="button" class="new-entry-add" id="newCategoryAdd">Adicionar</button>
+        <button type="button" class="new-entry-cancel" id="newCategoryCancel">Cancelar</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label-row">
+        <label for="productBrand">Marca - opcional</label>
+        <button type="button" class="manage-link" data-manage="marcas">Gerir marcas</button>
+      </div>
+      <select id="productBrand" name="productBrand">
+        <option value="">Sem marca</option>
+      </select>
+      <div class="new-entry-row" id="newBrandRow" hidden>
+        <input type="text" id="newBrandInput" placeholder="Nome da nova marca">
+        <button type="button" class="new-entry-add" id="newBrandAdd">Adicionar</button>
+        <button type="button" class="new-entry-cancel" id="newBrandCancel">Cancelar</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="productRef">Referência / SKU - opcional</label>
+      <input type="text" id="productRef" name="productRef" placeholder="Ex.: PS-1042">
+    </div>
+    <div class="field" id="usedStateField" hidden>
+      <label for="productUsedState">Grade do Artigo (usado)</label>
+      <select id="productUsedState" name="productUsedState">
+        <option value="grade_a">Grade A</option>
+        <option value="grade_b">Grade B</option>
+        <option value="grade_c">Grade C</option>
+        <option value="grade_d">Grade D</option>
+        <option value="grade_e">Grade E</option>
+        <option value="grade_f">Grade F</option>
+      </select>
+    </div>
+    <div class="field" id="usedNotesField" hidden>
+      <label for="productUsedNotes">Descrição das Marcas/Defeitos (usado)</label>
+      <textarea id="productUsedNotes" name="productUsedNotes" placeholder="Descreva de forma clara as marcas de uso ou defeitos, ex.: pequeno risco na tampa, ligeiro desgaste na sola."></textarea>
+      <p class="field-hint">Aparece na ficha do produto para o cliente saber exatamente o estado em que compra o artigo.</p>
     </div>
     <div class="field">
       <label for="productOldPrice">Preço Antigo (€) - opcional</label>
@@ -336,11 +554,42 @@
     <div class="field">
       <label for="productPhotos">Fotos do Produto - opcional</label>
       <input type="file" id="productPhotos" name="productPhotos" accept="image/*" multiple>
-      <p class="field-hint">Pode escolher várias fotos de uma vez, ou adicionar mais depois de escolher as primeiras. A primeira foto da lista é usada como foto principal na montra.</p>
+      <p class="field-hint">Pode escolher várias fotos de uma vez, ou adicionar mais depois de escolher as primeiras. Arraste uma foto para a reordenar, ou use "Tornar principal" - a foto principal (a primeira) é a que aparece na montra.</p>
       <div class="photo-preview-grid" id="photoPreviewGrid"></div>
+    </div>
+    <div class="field">
+      <div class="raffle-config-header">
+        <label for="productActive">Visível na loja</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="productActive" checked>
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </label>
+      </div>
+      <p class="field-hint">Desligue para esconder o produto da loja sem o apagar - fica guardado aqui e pode reativá-lo quando quiser.</p>
+    </div>
+    <div class="field">
+      <div class="raffle-config-header">
+        <label for="productHighlight">Mostrar em Destaques na página inicial</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="productHighlight">
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </label>
+      </div>
+      <p class="field-hint">Ligue para este produto aparecer na secção "Destaques" no topo da página inicial da loja.</p>
     </div>
     <button type="submit" class="save-btn" id="productSaveBtn">Guardar Produto</button>
   </form>
+</div>
+
+<div class="modal-overlay" id="manageListModalOverlay"></div>
+<div class="admin-modal" id="manageListModal" role="dialog" aria-modal="true" aria-labelledby="manageListModalTitle" aria-hidden="true">
+  <button class="modal-close" id="manageListModalClose" aria-label="Fechar"><svg><use href="#i-close"/></svg></button>
+  <h2 id="manageListModalTitle">Gerir categorias</h2>
+  <div class="manage-list-add-row">
+    <input type="text" id="manageListNewInput" placeholder="Nome...">
+    <button type="button" class="save-btn manage-list-add-btn" id="manageListAddBtn">Adicionar</button>
+  </div>
+  <div id="manageListItems" class="manage-list-items"></div>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -357,34 +606,90 @@
   // e guardar o resultado numa variável também chamada "supabase" dá erro.
   var supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-  // Palavra-passe de demonstração - a substituir pela autenticação real do Supabase.
-  var ADMIN_PASSWORD = 'prostock2026';
+  // PROGRAMADOR: O checkout unificado da loja (index.html) requer a tabela "encomendas":
+  //   id (bigint, identity, chave primária), created_at (timestamptz, default now()),
+  //   nome_cliente (text), telemovel (text), morada (text), codigo_postal (text),
+  //   metodo_pagamento (text), itens (jsonb), total (numeric).
+  // E requer 3 colunas extra na tabela "rifas" (para saber a quem pertence cada número):
+  //   comprador_nome (text), comprador_telefone (text), encomenda_id (bigint).
 
+  function escapeHtml(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  // ---- Autenticação real via Supabase Auth (email/palavra-passe) ----
+  // PROGRAMADOR: O utilizador administrador tem de ser criado manualmente no painel do
+  // Supabase (Authentication -> Users -> Add user, com "Auto Confirm User" ativo) - não
+  // existe registo público neste formulário.
   var loginScreen = document.getElementById('loginScreen');
   var loginForm = document.getElementById('loginForm');
   var loginError = document.getElementById('loginError');
   var dashboardScreen = document.getElementById('dashboardScreen');
+  var loginBtn = loginForm.querySelector('.login-btn');
 
-  loginForm.addEventListener('submit', function(e){
+  // Alerta sonoro: o AudioContext só pode ser criado/desbloqueado a partir de um gesto
+  // direto do utilizador (as políticas de autoplay dos browsers exigem isto) - usa-se o
+  // envio do formulário de login como esse gesto, para já estar pronto quando entrar no painel.
+  var alertAudioCtx = null;
+  function unlockAlertAudio(){
+    if (alertAudioCtx) return;
+    try { alertAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch (err) { console.error(err); }
+  }
+
+  function enterDashboard(){
+    loginScreen.hidden = true;
+    dashboardScreen.hidden = false;
+    loginError.textContent = '';
+    loadCategoriasMarcas();
+    loadProducts();
+    loadRaffleGrid();
+    loadRaffleConfig();
+    loadOrders();
+  }
+
+  loginForm.addEventListener('submit', async function(e){
     e.preventDefault();
-    var value = document.getElementById('adminPassword').value;
-    // PROGRAMADOR: Ligar aqui a função do Supabase (verificar sessão/autenticação real)
-    if (value === ADMIN_PASSWORD){
-      loginScreen.hidden = true;
-      dashboardScreen.hidden = false;
-      loadProducts();
-      loadRaffleGrid();
-    } else {
-      loginError.textContent = 'Palavra-passe incorreta. Tente novamente.';
+    unlockAlertAudio();
+    var email = document.getElementById('adminEmail').value.trim();
+    var password = document.getElementById('adminPassword').value;
+    var originalText = loginBtn.textContent;
+    loginBtn.disabled = true; loginBtn.textContent = 'A entrar...';
+    var result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+    loginBtn.disabled = false; loginBtn.textContent = originalText;
+    if (result.error){
+      console.error(result.error);
+      // Mostra o motivo real devolvido pelo Supabase (traduzido nos casos mais comuns) para
+      // ser mais fácil perceber se é mesmo a palavra-passe errada, o email por confirmar, etc.
+      var msg = result.error.message || '';
+      var msgPt = 'Não foi possível entrar (' + msg + ').';
+      if (/invalid login credentials/i.test(msg)){ msgPt = 'Email ou palavra-passe incorretos.'; }
+      else if (/email not confirmed/i.test(msg)){ msgPt = 'O email ainda não foi confirmado - confirme em Authentication → Users no Supabase.'; }
+      else if (/rate limit/i.test(msg)){ msgPt = 'Demasiadas tentativas seguidas. Aguarde um pouco e tente novamente.'; }
+      loginError.textContent = msgPt;
       loginScreen.classList.remove('shake'); void loginScreen.offsetWidth; loginScreen.classList.add('shake');
+      return;
     }
+    // A entrada no painel acontece através do listener "onAuthStateChange" abaixo.
   });
 
-  document.getElementById('logoutBtn').addEventListener('click', function(){
-    dashboardScreen.hidden = true;
-    loginScreen.hidden = false;
-    loginError.textContent = '';
-    document.getElementById('adminPassword').value = '';
+  document.getElementById('logoutBtn').addEventListener('click', async function(){
+    await supabaseClient.auth.signOut();
+    // A saída do painel acontece através do listener "onAuthStateChange" abaixo.
+  });
+
+  // Mantém o painel sincronizado com o estado real da sessão - cobre tanto o login/logout
+  // manual como a recuperação automática de uma sessão já existente (ex.: reabrir a página).
+  supabaseClient.auth.onAuthStateChange(function(event, session){
+    if (session){
+      if (dashboardScreen.hidden) enterDashboard();
+    } else {
+      dashboardScreen.hidden = true;
+      loginScreen.hidden = false;
+      loginForm.reset();
+    }
   });
 
   // ---- Toast ----
@@ -438,11 +743,20 @@
       var thumb = p.imagem ?
         '<img src="' + p.imagem + '" alt="" onerror="this.parentElement.innerHTML=\'<svg aria-hidden=&quot;true&quot;><use href=&quot;#i-box&quot;/></svg>\'">' :
         '<svg aria-hidden="true"><use href="#i-box"/></svg>';
+      var isAtivo = p.ativo !== false;
+      var metaParts = [p.categoria, p.marca, p.referencia].filter(Boolean).map(escapeHtml);
+      var metaHtml = metaParts.length ? '<p class="product-meta">' + metaParts.join(' · ') + '</p>' : '';
+      var inactiveBadge = isAtivo ? '' : '<span class="inactive-badge">Inativo</span>';
+      var highlightBadge = p.destaque ? '<span class="highlight-badge">★ Destaque</span>' : '';
       return '<div class="product-row">' +
         '<div class="product-thumb">' + thumb + '</div>' +
-        '<div class="product-details"><h3>' + p.nome + '</h3><span class="price">' + formatEuro(p.preco) + '</span></div>' +
+        '<div class="product-details"><h3>' + escapeHtml(p.nome) + inactiveBadge + highlightBadge + '</h3>' + metaHtml +
+          '<span class="price">' + formatEuro(p.preco) + '</span></div>' +
         '<div class="product-actions">' +
           '<button type="button" class="edit-btn" data-id="' + p.id + '">Editar</button>' +
+          '<button type="button" class="duplicate-btn" data-id="' + p.id + '">Duplicar</button>' +
+          '<button type="button" class="toggle-active-btn ' + (isAtivo ? 'state-ativo' : 'state-inativo') + '" data-id="' + p.id + '">' +
+            (isAtivo ? 'Ativo' : 'Inativo') + '</button>' +
           '<button type="button" class="delete-btn" data-id="' + p.id + '">VENDIDO /<br>APAGAR</button>' +
         '</div>' +
       '</div>';
@@ -469,6 +783,31 @@
       var editId = editBtn.dataset.id;
       var product = products.find(function(p){ return String(p.id) === editId; });
       if (product) openProductModal(product);
+      return;
+    }
+    var duplicateBtn = e.target.closest('.duplicate-btn');
+    if (duplicateBtn){
+      var dupId = duplicateBtn.dataset.id;
+      var dupProduct = products.find(function(p){ return String(p.id) === dupId; });
+      if (dupProduct) openProductModal(dupProduct, { duplicar: true });
+      return;
+    }
+    var toggleBtn = e.target.closest('.toggle-active-btn');
+    if (toggleBtn){
+      var toggleId = toggleBtn.dataset.id;
+      var toggleProduct = products.find(function(p){ return String(p.id) === toggleId; });
+      if (!toggleProduct) return;
+      var novoAtivo = !(toggleProduct.ativo !== false);
+      toggleBtn.disabled = true;
+      var toggleResult = await supabaseClient.from('produtos').update({ ativo: novoAtivo }).eq('id', toggleId);
+      toggleBtn.disabled = false;
+      if (toggleResult.error){
+        console.error(toggleResult.error);
+        showToast('Erro ao atualizar produto');
+        return;
+      }
+      showToast(novoAtivo ? 'Produto ativado - já aparece na loja' : 'Produto desativado - deixou de aparecer na loja');
+      await loadProducts();
     }
   });
 
@@ -479,51 +818,109 @@
   var productModalTitle = document.getElementById('productModalTitle');
   var productSaveBtn = document.getElementById('productSaveBtn');
   var editingProductId = null;
-  var existingProductImages = [];
-  var pendingNewPhotoFiles = [];
+  // ---- Gestão de múltiplas fotos (pré-visualização, ordem, foto principal, remoção,
+  // upload posterior) ----
+  // Lista única e ordenada com as fotos já guardadas ("existing", já têm URL no Storage)
+  // e as novas escolhidas agora ("pending", ainda por carregar) - a ordem desta lista é a
+  // ordem final das fotos do produto, e a primeira é sempre a foto principal.
+  var photoItems = [];
 
-  // ---- Gestão de múltiplas fotos (pré-visualização, remoção individual, upload posterior) ----
+  function revokePendingPreviewUrls(){
+    photoItems.forEach(function(item){
+      if (item.type === 'pending' && item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+    });
+  }
+
   function renderPhotoPreview(){
     var grid = document.getElementById('photoPreviewGrid');
-    var items = [];
-    existingProductImages.forEach(function(url, idx){ items.push({ type: 'existing', src: url, idx: idx }); });
-    pendingNewPhotoFiles.forEach(function(file, idx){ items.push({ type: 'pending', src: URL.createObjectURL(file), idx: idx }); });
-    if (!items.length){ grid.innerHTML = ''; return; }
-    grid.innerHTML = items.map(function(item, pos){
-      return '<div class="photo-preview-item">' +
-        '<img src="' + item.src + '" alt="">' +
-        (pos === 0 ? '<span class="photo-preview-primary-tag">Principal</span>' : '') +
-        '<button type="button" class="photo-preview-remove" data-type="' + item.type + '" data-idx="' + item.idx + '" aria-label="Remover foto">&times;</button>' +
+    if (!photoItems.length){ grid.innerHTML = ''; return; }
+    grid.innerHTML = photoItems.map(function(item, pos){
+      var src = item.type === 'existing' ? item.url : item.previewUrl;
+      return '<div class="photo-preview-item" data-pos="' + pos + '" draggable="true">' +
+        '<div class="photo-preview-thumb">' +
+          '<img src="' + src + '" alt="" draggable="false">' +
+          (pos === 0 ? '<span class="photo-preview-primary-tag">Principal</span>' : '') +
+          '<button type="button" class="photo-preview-remove" data-pos="' + pos + '" aria-label="Remover foto">&times;</button>' +
+        '</div>' +
+        (pos === 0 ? '' : '<button type="button" class="photo-preview-make-primary" data-pos="' + pos + '">Tornar principal</button>') +
       '</div>';
     }).join('');
+    wirePhotoDragEvents();
+  }
+
+  // ---- Arrastar para reordenar (rato, no computador) - em telemóvel/tablet, sem suporte
+  // nativo a arrastar, usa-se o botão "Tornar principal" para escolher a foto principal. ----
+  var photoDragSrcPos = null;
+  function wirePhotoDragEvents(){
+    var items = document.querySelectorAll('#photoPreviewGrid .photo-preview-item');
+    items.forEach(function(item){
+      item.addEventListener('dragstart', function(){
+        photoDragSrcPos = parseInt(item.dataset.pos, 10);
+        item.classList.add('dragging');
+      });
+      item.addEventListener('dragend', function(){
+        item.classList.remove('dragging');
+        items.forEach(function(el){ el.classList.remove('drag-over'); });
+        photoDragSrcPos = null;
+      });
+      item.addEventListener('dragover', function(e){
+        e.preventDefault();
+        item.classList.add('drag-over');
+      });
+      item.addEventListener('dragleave', function(){
+        item.classList.remove('drag-over');
+      });
+      item.addEventListener('drop', function(e){
+        e.preventDefault();
+        item.classList.remove('drag-over');
+        var targetPos = parseInt(item.dataset.pos, 10);
+        if (photoDragSrcPos === null || photoDragSrcPos === targetPos) return;
+        var moved = photoItems.splice(photoDragSrcPos, 1)[0];
+        photoItems.splice(targetPos, 0, moved);
+        renderPhotoPreview();
+      });
+    });
   }
 
   document.getElementById('productPhotos').addEventListener('change', function(e){
     var files = Array.prototype.slice.call(e.target.files || []);
-    files.forEach(function(f){ pendingNewPhotoFiles.push(f); });
+    files.forEach(function(f){ photoItems.push({ type: 'pending', file: f, previewUrl: URL.createObjectURL(f) }); });
     e.target.value = '';
     renderPhotoPreview();
   });
 
   document.getElementById('photoPreviewGrid').addEventListener('click', function(e){
     var removeBtn = e.target.closest('.photo-preview-remove');
-    if (!removeBtn) return;
-    var idx = parseInt(removeBtn.dataset.idx, 10);
-    if (removeBtn.dataset.type === 'existing'){ existingProductImages.splice(idx, 1); }
-    else { pendingNewPhotoFiles.splice(idx, 1); }
-    renderPhotoPreview();
+    if (removeBtn){
+      var removePos = parseInt(removeBtn.dataset.pos, 10);
+      var removed = photoItems.splice(removePos, 1)[0];
+      if (removed && removed.type === 'pending' && removed.previewUrl) URL.revokeObjectURL(removed.previewUrl);
+      renderPhotoPreview();
+      return;
+    }
+    var primaryBtn = e.target.closest('.photo-preview-make-primary');
+    if (primaryBtn){
+      var primaryPos = parseInt(primaryBtn.dataset.pos, 10);
+      var moved = photoItems.splice(primaryPos, 1)[0];
+      photoItems.unshift(moved);
+      renderPhotoPreview();
+    }
   });
 
-  function openProductModal(product){
+  function openProductModal(product, options){
+    var duplicar = !!(options && options.duplicar);
+    document.getElementById('newCategoryRow').hidden = true;
+    document.getElementById('newBrandRow').hidden = true;
     if (product){
-      editingProductId = product.id;
-      existingProductImages = product.imagens ?
+      editingProductId = duplicar ? null : product.id;
+      revokePendingPreviewUrls();
+      var existingUrls = product.imagens ?
         String(product.imagens).split(',').map(function(v){ return v.trim(); }).filter(Boolean) :
         (product.imagem ? [String(product.imagem).trim()].filter(Boolean) : []);
-      pendingNewPhotoFiles = [];
-      productModalTitle.textContent = 'Editar Produto';
-      productSaveBtn.textContent = 'Guardar Alterações';
-      document.getElementById('productName').value = product.nome;
+      photoItems = existingUrls.map(function(url){ return { type: 'existing', url: url }; });
+      productModalTitle.textContent = duplicar ? 'Duplicar Produto' : 'Editar Produto';
+      productSaveBtn.textContent = duplicar ? 'Guardar Cópia' : 'Guardar Alterações';
+      document.getElementById('productName').value = duplicar ? (product.nome + ' (cópia)') : product.nome;
       document.getElementById('productPrice').value = product.preco;
       document.getElementById('productCondition').value = (String(product.condicao || '').trim().toLowerCase() === 'usado') ? 'usado' : 'novo';
       document.getElementById('productOldPrice').value = (product.preco_antigo != null) ? product.preco_antigo : '';
@@ -532,36 +929,272 @@
       document.getElementById('productDescription').value = product.descricao || '';
       document.getElementById('productSizes').value = product.tamanhos || '';
       document.getElementById('productColors').value = product.cores || '';
+      document.getElementById('productUsedState').value = product.estado_usado || 'grade_a';
+      document.getElementById('productUsedNotes').value = product.notas_estado || '';
+      populateCategorySelect(product.categoria || '');
+      populateBrandSelect(product.marca || '');
+      document.getElementById('productRef').value = product.referencia || '';
+      // Uma cópia começa sempre ativa, mesmo que o produto original esteja desativado.
+      document.getElementById('productActive').checked = duplicar ? true : (product.ativo !== false);
+      // Uma cópia nunca começa em Destaques - evita duplicar destaques sem querer.
+      document.getElementById('productHighlight').checked = duplicar ? false : !!product.destaque;
       document.getElementById('productPhotos').value = '';
     } else {
       editingProductId = null;
-      existingProductImages = [];
-      pendingNewPhotoFiles = [];
+      revokePendingPreviewUrls();
+      photoItems = [];
       productModalTitle.textContent = 'Adicionar Produto';
       productSaveBtn.textContent = 'Guardar Produto';
       productForm.reset();
+      populateCategorySelect('');
+      populateBrandSelect('');
+      document.getElementById('productActive').checked = true;
+      document.getElementById('productHighlight').checked = false;
     }
+    toggleUsedStateFields();
     renderPhotoPreview();
     productModal.classList.add('open'); productModalOverlay.classList.add('open');
     productModal.setAttribute('aria-hidden', 'false');
     document.getElementById('productName').focus();
   }
+  // Os campos de "estado do artigo" só fazem sentido para produtos usados.
+  function toggleUsedStateFields(){
+    var isUsado = document.getElementById('productCondition').value === 'usado';
+    document.getElementById('usedStateField').hidden = !isUsado;
+    document.getElementById('usedNotesField').hidden = !isUsado;
+  }
+  document.getElementById('productCondition').addEventListener('change', toggleUsedStateFields);
   function closeProductModal(){
     productModal.classList.remove('open'); productModalOverlay.classList.remove('open');
     productModal.setAttribute('aria-hidden', 'true');
-    existingProductImages = [];
-    pendingNewPhotoFiles = [];
+    revokePendingPreviewUrls();
+    photoItems = [];
     renderPhotoPreview();
   }
 
   document.getElementById('addProductBtn').addEventListener('click', function(){ openProductModal(); });
   document.getElementById('productModalClose').addEventListener('click', closeProductModal);
   productModalOverlay.addEventListener('click', closeProductModal);
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeProductModal(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Escape') return;
+    if (manageListModal.classList.contains('open')) closeManageListModal();
+    else closeProductModal();
+  });
+
+  // ---- Categorias e marcas geridas (tabelas "categorias" e "marcas") ----
+  // PROGRAMADOR: Requer as tabelas "categorias" e "marcas" - ver migração 04-categorias-marcas.sql.
+  // Os campos do produto continuam a guardar texto simples (colunas "categoria"/"marca" em
+  // "produtos") - estas tabelas servem só para listar opções já usadas, sem repetir sempre a
+  // escrever à mão. Por isso o valor de cada <option> é o próprio nome, não o id.
+  var categorias = [];
+  var marcas = [];
+
+  async function loadCategoriasMarcas(){
+    var catResult = await supabaseClient.from('categorias').select('*').order('nome');
+    if (catResult.error) console.error(catResult.error);
+    else categorias = catResult.data || [];
+    var marcaResult = await supabaseClient.from('marcas').select('*').order('nome');
+    if (marcaResult.error) console.error(marcaResult.error);
+    else marcas = marcaResult.data || [];
+  }
+
+  function namesWithCurrent(list, current){
+    var names = list.map(function(item){ return item.nome; });
+    if (current && names.indexOf(current) === -1) names.push(current);
+    names.sort(function(a, b){ return a.localeCompare(b, 'pt'); });
+    return names;
+  }
+
+  function populateCategorySelect(selectedValue){
+    var select = document.getElementById('productCategory');
+    var html = '<option value="">Sem categoria</option>';
+    namesWithCurrent(categorias, selectedValue).forEach(function(n){
+      html += '<option value="' + escapeHtml(n) + '">' + escapeHtml(n) + '</option>';
+    });
+    html += '<option value="__nova__">+ Nova categoria...</option>';
+    select.innerHTML = html;
+    select.value = selectedValue || '';
+  }
+
+  function populateBrandSelect(selectedValue){
+    var select = document.getElementById('productBrand');
+    var html = '<option value="">Sem marca</option>';
+    namesWithCurrent(marcas, selectedValue).forEach(function(n){
+      html += '<option value="' + escapeHtml(n) + '">' + escapeHtml(n) + '</option>';
+    });
+    html += '<option value="__nova__">+ Nova marca...</option>';
+    select.innerHTML = html;
+    select.value = selectedValue || '';
+  }
+
+  async function addNewCategoria(nome, selectAfter){
+    var trimmed = nome.trim();
+    if (!trimmed) return false;
+    var upsertResult = await supabaseClient.from('categorias').upsert({ nome: trimmed }, { onConflict: 'nome', ignoreDuplicates: true });
+    if (upsertResult.error){
+      console.error(upsertResult.error);
+      showToast('Erro ao criar categoria');
+      return false;
+    }
+    await loadCategoriasMarcas();
+    if (selectAfter) populateCategorySelect(trimmed);
+    return true;
+  }
+
+  async function addNewMarca(nome, selectAfter){
+    var trimmed = nome.trim();
+    if (!trimmed) return false;
+    var upsertResult = await supabaseClient.from('marcas').upsert({ nome: trimmed }, { onConflict: 'nome', ignoreDuplicates: true });
+    if (upsertResult.error){
+      console.error(upsertResult.error);
+      showToast('Erro ao criar marca');
+      return false;
+    }
+    await loadCategoriasMarcas();
+    if (selectAfter) populateBrandSelect(trimmed);
+    return true;
+  }
+
+  document.getElementById('productCategory').addEventListener('change', function(){
+    if (this.value !== '__nova__') return;
+    document.getElementById('newCategoryRow').hidden = false;
+    document.getElementById('newCategoryInput').value = '';
+    document.getElementById('newCategoryInput').focus();
+  });
+  document.getElementById('productBrand').addEventListener('change', function(){
+    if (this.value !== '__nova__') return;
+    document.getElementById('newBrandRow').hidden = false;
+    document.getElementById('newBrandInput').value = '';
+    document.getElementById('newBrandInput').focus();
+  });
+
+  document.getElementById('newCategoryCancel').addEventListener('click', function(){
+    document.getElementById('newCategoryRow').hidden = true;
+    document.getElementById('productCategory').value = '';
+  });
+  document.getElementById('newBrandCancel').addEventListener('click', function(){
+    document.getElementById('newBrandRow').hidden = true;
+    document.getElementById('productBrand').value = '';
+  });
+
+  document.getElementById('newCategoryAdd').addEventListener('click', async function(){
+    var input = document.getElementById('newCategoryInput');
+    var nome = input.value.trim();
+    if (!nome){ input.focus(); return; }
+    var btn = this;
+    btn.disabled = true;
+    var ok = await addNewCategoria(nome, true);
+    btn.disabled = false;
+    if (ok){ document.getElementById('newCategoryRow').hidden = true; showToast('Categoria criada'); }
+  });
+  document.getElementById('newBrandAdd').addEventListener('click', async function(){
+    var input = document.getElementById('newBrandInput');
+    var nome = input.value.trim();
+    if (!nome){ input.focus(); return; }
+    var btn = this;
+    btn.disabled = true;
+    var ok = await addNewMarca(nome, true);
+    btn.disabled = false;
+    if (ok){ document.getElementById('newBrandRow').hidden = true; showToast('Marca criada'); }
+  });
+  document.getElementById('newCategoryInput').addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); document.getElementById('newCategoryAdd').click(); }
+  });
+  document.getElementById('newBrandInput').addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); document.getElementById('newBrandAdd').click(); }
+  });
+
+  // ---- Modal "Gerir categorias" / "Gerir marcas" (listar e remover) ----
+  var manageListModal = document.getElementById('manageListModal');
+  var manageListModalOverlay = document.getElementById('manageListModalOverlay');
+  var manageListModalTitle = document.getElementById('manageListModalTitle');
+  var manageListItems = document.getElementById('manageListItems');
+  var manageListNewInput = document.getElementById('manageListNewInput');
+  var manageListAddBtn = document.getElementById('manageListAddBtn');
+  var manageListCurrentType = null;
+
+  function renderManageListItems(){
+    var list = manageListCurrentType === 'categorias' ? categorias : marcas;
+    if (!list.length){
+      manageListItems.innerHTML = '<p class="manage-list-empty">Ainda não há nenhuma. Adicione a primeira acima.</p>';
+      return;
+    }
+    manageListItems.innerHTML = list.map(function(item){
+      return '<div class="manage-list-item"><span>' + escapeHtml(item.nome) + '</span>' +
+        '<button type="button" class="manage-list-item-delete" data-id="' + item.id + '">Remover</button></div>';
+    }).join('');
+  }
+
+  function openManageListModal(type){
+    manageListCurrentType = type;
+    manageListModalTitle.textContent = type === 'categorias' ? 'Gerir categorias' : 'Gerir marcas';
+    manageListNewInput.value = '';
+    renderManageListItems();
+    manageListModal.classList.add('open'); manageListModalOverlay.classList.add('open');
+    manageListModal.setAttribute('aria-hidden', 'false');
+    manageListNewInput.focus();
+  }
+
+  function closeManageListModal(){
+    manageListModal.classList.remove('open'); manageListModalOverlay.classList.remove('open');
+    manageListModal.setAttribute('aria-hidden', 'true');
+    // As listas do formulário de produto podem ter mudado enquanto este modal esteve aberto.
+    populateCategorySelect(document.getElementById('productCategory').value === '__nova__' ? '' : document.getElementById('productCategory').value);
+    populateBrandSelect(document.getElementById('productBrand').value === '__nova__' ? '' : document.getElementById('productBrand').value);
+  }
+
+  document.querySelectorAll('.manage-link').forEach(function(btn){
+    btn.addEventListener('click', function(){ openManageListModal(btn.dataset.manage); });
+  });
+  document.getElementById('manageListModalClose').addEventListener('click', closeManageListModal);
+  manageListModalOverlay.addEventListener('click', closeManageListModal);
+
+  manageListAddBtn.addEventListener('click', async function(){
+    var nome = manageListNewInput.value.trim();
+    if (!nome){ manageListNewInput.focus(); return; }
+    manageListAddBtn.disabled = true;
+    var ok = manageListCurrentType === 'categorias' ? await addNewCategoria(nome, false) : await addNewMarca(nome, false);
+    manageListAddBtn.disabled = false;
+    if (ok){
+      manageListNewInput.value = '';
+      renderManageListItems();
+      showToast(manageListCurrentType === 'categorias' ? 'Categoria criada' : 'Marca criada');
+    }
+  });
+  manageListNewInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); manageListAddBtn.click(); }
+  });
+
+  manageListItems.addEventListener('click', async function(e){
+    var delBtn = e.target.closest('.manage-list-item-delete');
+    if (!delBtn) return;
+    var id = delBtn.dataset.id;
+    delBtn.disabled = true;
+    var delResult = await supabaseClient.from(manageListCurrentType).delete().eq('id', id);
+    if (delResult.error){
+      console.error(delResult.error);
+      showToast('Erro ao remover');
+      delBtn.disabled = false;
+      return;
+    }
+    await loadCategoriasMarcas();
+    renderManageListItems();
+    showToast('Removido');
+  });
 
   productForm.addEventListener('submit', async function(e){
     e.preventDefault();
     if (!productForm.reportValidity()) return;
+    if (document.getElementById('productCategory').value === '__nova__'){
+      showToast('Confirme ou cancele a nova categoria antes de guardar');
+      document.getElementById('newCategoryInput').focus();
+      return;
+    }
+    if (document.getElementById('productBrand').value === '__nova__'){
+      showToast('Confirme ou cancele a nova marca antes de guardar');
+      document.getElementById('newBrandInput').focus();
+      return;
+    }
 
     var nome = document.getElementById('productName').value.trim();
     var preco = parseFloat(document.getElementById('productPrice').value);
@@ -573,6 +1206,13 @@
     var descricao = document.getElementById('productDescription').value.trim() || null;
     var tamanhos = document.getElementById('productSizes').value.trim() || null;
     var cores = document.getElementById('productColors').value.trim() || null;
+    var estadoUsado = condicao === 'usado' ? document.getElementById('productUsedState').value : null;
+    var notasEstado = condicao === 'usado' ? (document.getElementById('productUsedNotes').value.trim() || null) : null;
+    var categoria = document.getElementById('productCategory').value.trim() || null;
+    var marca = document.getElementById('productBrand').value.trim() || null;
+    var referencia = document.getElementById('productRef').value.trim() || null;
+    var ativo = document.getElementById('productActive').checked;
+    var destaque = document.getElementById('productHighlight').checked;
 
     var originalBtnText = productSaveBtn.textContent;
     function restoreSaveBtn(){
@@ -580,13 +1220,21 @@
       productSaveBtn.textContent = originalBtnText;
     }
 
+    var hasPending = photoItems.some(function(item){ return item.type === 'pending'; });
     productSaveBtn.disabled = true;
-    if (pendingNewPhotoFiles.length) productSaveBtn.textContent = 'A carregar fotos e produto...';
+    if (hasPending) productSaveBtn.textContent = 'A carregar fotos e produto...';
 
-    // Mantém as fotos já existentes (em edição) e junta as novas que foram escolhidas.
-    var uploadedUrls = [];
-    for (var photoIdx = 0; photoIdx < pendingNewPhotoFiles.length; photoIdx++){
-      var photoFile = pendingNewPhotoFiles[photoIdx];
+    // Percorre as fotos pela ordem atual (a que foi definida ao arrastar / "Tornar principal"),
+    // carregando agora as que ainda são novas - assim a ordem final respeita exatamente o que
+    // foi organizado no formulário, com a primeira a ficar como foto principal.
+    var finalImages = [];
+    for (var photoIdx = 0; photoIdx < photoItems.length; photoIdx++){
+      var photoItem = photoItems[photoIdx];
+      if (photoItem.type === 'existing'){
+        finalImages.push(photoItem.url);
+        continue;
+      }
+      var photoFile = photoItem.file;
       // A) Upload do ficheiro para o bucket "produtos" no Supabase Storage,
       // com um nome único baseado na data atual.
       var fileExt = photoFile.name.indexOf('.') > -1 ? photoFile.name.split('.').pop() : 'jpg';
@@ -600,10 +1248,9 @@
       }
       // B) Obtém o URL público da foto que acabou de ser carregada.
       var publicUrlResult = supabaseClient.storage.from('produtos').getPublicUrl(fileName);
-      uploadedUrls.push(publicUrlResult.data.publicUrl);
+      finalImages.push(publicUrlResult.data.publicUrl);
     }
 
-    var finalImages = existingProductImages.concat(uploadedUrls);
     var imagensStr = finalImages.length ? finalImages.join(', ') : null;
 
     // C) Grava o produto na tabela "produtos" - "imagem" guarda a foto principal (a primeira
@@ -619,7 +1266,14 @@
       nota_stock: notaStock,
       descricao: descricao,
       tamanhos: tamanhos,
-      cores: cores
+      cores: cores,
+      estado_usado: estadoUsado,
+      notas_estado: notasEstado,
+      categoria: categoria,
+      marca: marca,
+      referencia: referencia,
+      ativo: ativo,
+      destaque: destaque
     };
 
     if (editingProductId !== null){
@@ -656,10 +1310,140 @@
     restoreSaveBtn();
   });
 
+  // ---- Definições do Sorteio (ligado ao Supabase, tabela "sorteio_config": linha única id=1) ----
+  var raffleConfig = { id: 1, ativo: true, titulo: '', descricao: '', imagem: '', preco_numero: 2 };
+  var existingRaffleImage = '';
+  var pendingRafflePhotoFile = null;
+
+  function renderRafflePhotoPreview(){
+    var grid = document.getElementById('rafflePhotoPreviewGrid');
+    var item = null;
+    if (pendingRafflePhotoFile){ item = { type: 'pending', src: URL.createObjectURL(pendingRafflePhotoFile) }; }
+    else if (existingRaffleImage){ item = { type: 'existing', src: existingRaffleImage }; }
+    if (!item){ grid.innerHTML = ''; return; }
+    grid.innerHTML = '<div class="photo-preview-item">' +
+      '<img src="' + item.src + '" alt="">' +
+      '<button type="button" class="photo-preview-remove" data-type="' + item.type + '" aria-label="Remover foto">&times;</button>' +
+    '</div>';
+  }
+
+  document.getElementById('rafflePhotoInput').addEventListener('change', function(e){
+    var file = (e.target.files || [])[0];
+    if (file){ pendingRafflePhotoFile = file; }
+    e.target.value = '';
+    renderRafflePhotoPreview();
+  });
+
+  document.getElementById('rafflePhotoPreviewGrid').addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.photo-preview-remove');
+    if (!removeBtn) return;
+    if (removeBtn.dataset.type === 'pending'){ pendingRafflePhotoFile = null; }
+    else { existingRaffleImage = ''; }
+    renderRafflePhotoPreview();
+  });
+
+  function updateRaffleActiveHint(){
+    var hint = document.getElementById('raffleActiveHint');
+    hint.textContent = document.getElementById('raffleActiveToggle').checked ?
+      'O sorteio está visível na loja.' : 'O sorteio está oculto da loja.';
+  }
+  document.getElementById('raffleActiveToggle').addEventListener('change', updateRaffleActiveHint);
+
+  async function loadRaffleConfig(){
+    // PROGRAMADOR: Requer a tabela "sorteio_config" no Supabase (linha única, id=1) com as
+    // colunas: id (int8, chave primária), ativo (bool), titulo (text), descricao (text),
+    // imagem (text), preco_numero (numeric).
+    var result = await supabaseClient.from('sorteio_config').select('*').eq('id', 1).maybeSingle();
+    if (result.error){
+      console.error(result.error);
+      showToast('Erro ao carregar definições do sorteio');
+      return;
+    }
+    if (result.data) raffleConfig = result.data;
+    document.getElementById('raffleActiveToggle').checked = raffleConfig.ativo !== false;
+    document.getElementById('raffleTitleInput').value = raffleConfig.titulo || '';
+    document.getElementById('rafflePriceInput').value = (raffleConfig.preco_numero != null) ? raffleConfig.preco_numero : '';
+    document.getElementById('raffleDescInput').value = raffleConfig.descricao || '';
+    existingRaffleImage = raffleConfig.imagem || '';
+    pendingRafflePhotoFile = null;
+    renderRafflePhotoPreview();
+    updateRaffleActiveHint();
+  }
+
+  document.getElementById('raffleConfigSaveBtn').addEventListener('click', async function(){
+    var btn = document.getElementById('raffleConfigSaveBtn');
+    var originalText = btn.textContent;
+    var ativo = document.getElementById('raffleActiveToggle').checked;
+    var titulo = document.getElementById('raffleTitleInput').value.trim();
+    var precoNumero = parseFloat(document.getElementById('rafflePriceInput').value);
+    var descricao = document.getElementById('raffleDescInput').value.trim() || null;
+
+    if (!titulo){ showToast('Indique o título do prémio'); return; }
+    if (isNaN(precoNumero) || precoNumero < 0){ showToast('Indique um preço válido'); return; }
+
+    btn.disabled = true;
+    btn.textContent = pendingRafflePhotoFile ? 'A carregar foto e definições...' : 'A guardar...';
+
+    var imagemUrl = existingRaffleImage;
+    if (pendingRafflePhotoFile){
+      var fileExt = pendingRafflePhotoFile.name.indexOf('.') > -1 ? pendingRafflePhotoFile.name.split('.').pop() : 'jpg';
+      var fileName = 'sorteio-' + Date.now() + '.' + fileExt;
+      var uploadResult = await supabaseClient.storage.from('produtos').upload(fileName, pendingRafflePhotoFile);
+      if (uploadResult.error){
+        console.error(uploadResult.error);
+        showToast('Erro ao carregar a foto do prémio');
+        btn.disabled = false; btn.textContent = originalText;
+        return;
+      }
+      var publicUrlResult = supabaseClient.storage.from('produtos').getPublicUrl(fileName);
+      imagemUrl = publicUrlResult.data.publicUrl;
+    }
+
+    var payload = {
+      id: 1,
+      ativo: ativo,
+      titulo: titulo,
+      descricao: descricao,
+      imagem: imagemUrl || null,
+      preco_numero: precoNumero
+    };
+
+    // PROGRAMADOR: upsert grava/atualiza a linha única (id=1) da tabela "sorteio_config".
+    var upsertResult = await supabaseClient.from('sorteio_config').upsert(payload).select();
+    btn.disabled = false; btn.textContent = originalText;
+    if (upsertResult.error){
+      console.error(upsertResult.error);
+      showToast('Erro ao guardar definições do sorteio');
+      return;
+    }
+    raffleConfig = (upsertResult.data && upsertResult.data[0]) || payload;
+    existingRaffleImage = imagemUrl || '';
+    pendingRafflePhotoFile = null;
+    renderRafflePhotoPreview();
+    showToast('Definições do sorteio guardadas');
+  });
+
   // ---- Raffle grid (ligado ao Supabase, tabela "rifas": numero, estado) ----
   // Assume que a tabela "rifas" já tem 100 linhas semeadas (numero 1 a 100,
   // estado 'disponivel') - este código só lê e atualiza linhas existentes.
   var raffleRows = [];
+
+  // Atualização em tempo real: quando outro utilizador (na loja) compra um número,
+  // a grelha de administração reflete de imediato o novo estado.
+  // PROGRAMADOR: Requer que o Realtime esteja ativado para a tabela "rifas"
+  // (Supabase → Database → Replication).
+  supabaseClient
+    .channel('rifas-admin-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'rifas' }, function(payload){
+      if (dashboardScreen.hidden) return;
+      var updated = payload.new;
+      if (!updated) return;
+      var row = raffleRows.find(function(r){ return r.numero === updated.numero; });
+      if (row){ row.estado = updated.estado; }
+      else { raffleRows.push(updated); raffleRows.sort(function(a,b){ return a.numero - b.numero; }); }
+      renderAdminRaffleGrid();
+    })
+    .subscribe();
 
   async function loadRaffleGrid(){
     var grid = document.getElementById('adminRaffleGrid');
@@ -686,8 +1470,23 @@
     grid.innerHTML = raffleRows.map(function(row){
       var sold = row.estado === 'vendido';
       if (sold) soldCount++;
+      var titleAttr = '';
+      if (sold){
+        if (row.comprador_nome){
+          titleAttr = ' title="' + escapeHtml(row.comprador_nome) + (row.comprador_telefone ? ' - ' + escapeHtml(row.comprador_telefone) : '') + '"';
+        } else if (row.reservado_em){
+          // Reservado por um cliente no seletor de números mas ainda sem encomenda concluída -
+          // liberta-se automaticamente (ver "libertar_rifas_expiradas" agendado no Supabase) se
+          // o checkout não for terminado dentro do tempo-limite.
+          var reservadoFmt = new Date(row.reservado_em).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' });
+          titleAttr = ' title="Reservado às ' + escapeHtml(reservadoFmt) + ' - liberta-se automaticamente se o checkout não for concluído"';
+        } else {
+          // Vendido sem comprador nem reserva: foi marcado manualmente no admin.
+          titleAttr = ' title="Vendido manualmente (sem dados de comprador)"';
+        }
+      }
       return '<button type="button" class="admin-raffle-num' + (sold ? ' sold' : '') +
-        '" data-num="' + row.numero + '" aria-pressed="' + (sold ? 'true' : 'false') + '">' + row.numero + '</button>';
+        '" data-num="' + row.numero + '" aria-pressed="' + (sold ? 'true' : 'false') + '"' + titleAttr + '>' + row.numero + '</button>';
     }).join('');
     document.getElementById('raffleSoldCount').textContent = soldCount + ' de ' + raffleRows.length + ' vendidos';
   }
@@ -707,7 +1506,151 @@
       return;
     }
     row.estado = novoEstado;
+    if (novoEstado === 'disponivel'){
+      row.comprador_nome = null; row.comprador_telefone = null; row.encomenda_id = null; row.reservado_em = null;
+      // Tenta limpar também os dados do comprador e da reserva (falha em silêncio se alguma
+      // destas colunas ainda não existir na tabela).
+      supabaseClient.from('rifas')
+        .update({ comprador_nome: null, comprador_telefone: null, encomenda_id: null, reservado_em: null })
+        .eq('numero', n)
+        .then(function(res){ if (res.error) console.error(res.error); });
+    }
     renderAdminRaffleGrid();
   });
+
+  // ---- Encomendas (ligado ao Supabase, tabela "encomendas") ----
+  var PAYMENT_LABELS = { mbway: 'MBWay', multibanco: 'Referência Multibanco', transferencia: 'Transferência Bancária' };
+
+  // PROGRAMADOR: Requer a coluna "estado" (text, default 'pendente') na tabela "encomendas"
+  // e políticas de RLS de update/delete para o papel "authenticated" - ver SQL fornecido.
+  var ORDER_STATUSES = [
+    { value: 'pendente', label: 'Pendente', cls: 'status-pendente' },
+    { value: 'confirmada', label: 'Confirmada', cls: 'status-confirmada' },
+    { value: 'em_preparacao', label: 'Em preparação', cls: 'status-preparacao' },
+    { value: 'enviada', label: 'Enviada', cls: 'status-enviada' },
+    { value: 'entregue', label: 'Entregue', cls: 'status-entregue' }
+  ];
+  function statusInfo(value){
+    var found = ORDER_STATUSES.filter(function(s){ return s.value === value; })[0];
+    return found || ORDER_STATUSES[0];
+  }
+  function statusOptionsHtml(current){
+    return ORDER_STATUSES.map(function(s){
+      return '<option value="' + s.value + '"' + (s.value === current ? ' selected' : '') + '>' + s.label + '</option>';
+    }).join('');
+  }
+
+  // Constrói o link "wa.me" para abrir uma conversa de WhatsApp já preenchida com o cliente.
+  // Nota: isto só ABRE uma janela de composição - nunca envia a mensagem automaticamente.
+  function buildWhatsAppLink(telemovel, nomeCliente){
+    var digits = String(telemovel || '').replace(/\D/g, '');
+    if (!digits) return null;
+    if (digits.length === 9){ digits = '351' + digits; }
+    else if (digits.length === 10 && digits.charAt(0) === '0'){ digits = '351' + digits.slice(1); }
+    var msg = 'Olá ' + nomeCliente + ', escrevo da PRO STOCK sobre a sua encomenda.';
+    return 'https://wa.me/' + digits + '?text=' + encodeURIComponent(msg);
+  }
+
+  async function loadOrders(){
+    var list = document.getElementById('orderList');
+    list.innerHTML = '<p class="empty-state">A carregar encomendas...</p>';
+    var result = await supabaseClient.from('encomendas').select('*').order('created_at', { ascending: false });
+    if (result.error){
+      console.error(result.error);
+      list.innerHTML = '<p class="empty-state">Não foi possível carregar as encomendas.</p>';
+      showToast('Erro ao carregar encomendas');
+      return;
+    }
+    renderOrders(result.data || []);
+  }
+
+  function renderOrders(orders){
+    var list = document.getElementById('orderList');
+    if (!orders.length){
+      list.innerHTML = '<p class="empty-state">Ainda não há encomendas registadas.</p>';
+      return;
+    }
+    list.innerHTML = orders.map(function(o){
+      var itensHtml = (o.itens || []).map(function(item){
+        var linha = escapeHtml(item.nome) + ' (x' + item.qty + ')';
+        if (item.numeros_rifa && item.numeros_rifa.length){
+          linha += ' - números ' + item.numeros_rifa.join(', ');
+        }
+        return '<li>' + linha + '</li>';
+      }).join('');
+      var dataFmt = o.created_at ? new Date(o.created_at).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' }) : '';
+      var payLabel = PAYMENT_LABELS[o.metodo_pagamento] || o.metodo_pagamento || '-';
+      var estadoAtual = o.estado || 'pendente';
+      var info = statusInfo(estadoAtual);
+      var waLink = buildWhatsAppLink(o.telemovel, o.nome_cliente);
+      var waBtn = waLink ?
+        '<a class="order-whatsapp-btn" href="' + waLink + '" target="_blank" rel="noopener">' +
+          '<svg aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp' +
+        '</a>' : '';
+      return '<div class="order-card">' +
+        '<div class="order-card-head"><span class="order-card-name">' + escapeHtml(o.nome_cliente) + '</span><span class="order-card-date">' + escapeHtml(dataFmt) + '</span></div>' +
+        '<div class="order-card-status-row">' +
+          '<select class="order-status-select ' + info.cls + '" data-id="' + o.id + '" aria-label="Estado da encomenda de ' + escapeHtml(o.nome_cliente) + '">' + statusOptionsHtml(estadoAtual) + '</select>' +
+        '</div>' +
+        '<p class="order-card-contact">' + escapeHtml(o.telemovel) + ' - ' + escapeHtml(o.morada) + ', ' + escapeHtml(o.codigo_postal) + '</p>' +
+        '<ul class="order-card-items">' + itensHtml + '</ul>' +
+        '<div class="order-card-foot"><span class="order-card-pay">' + escapeHtml(payLabel) + '</span><span class="order-card-total">' + formatEuro(o.total) + '</span></div>' +
+        (waBtn ? '<div class="order-card-actions">' + waBtn + '</div>' : '') +
+      '</div>';
+    }).join('');
+  }
+
+  // Atualiza o estado de uma encomenda diretamente a partir do separador "Encomendas".
+  document.getElementById('orderList').addEventListener('change', async function(e){
+    var select = e.target.closest('.order-status-select');
+    if (!select) return;
+    var id = select.dataset.id;
+    var novoEstado = select.value;
+    var info = statusInfo(novoEstado);
+    select.className = 'order-status-select ' + info.cls;
+    var result = await supabaseClient.from('encomendas').update({ estado: novoEstado }).eq('id', id);
+    if (result.error){
+      console.error(result.error);
+      showToast('Erro ao atualizar estado da encomenda');
+      return;
+    }
+    showToast('Estado atualizado para "' + info.label + '"');
+  });
+
+  // ---- Alerta sonoro + notificação em tempo real de novas encomendas ----
+  // Gera um pequeno toque de dois tons com a Web Audio API (sem depender de nenhum
+  // ficheiro de áudio externo). Só toca se "alertAudioCtx" já tiver sido desbloqueado
+  // por um gesto do utilizador (acontece no envio do formulário de login).
+  function playOrderAlertSound(){
+    if (!alertAudioCtx) return;
+    try {
+      if (alertAudioCtx.state === 'suspended') alertAudioCtx.resume();
+      var now = alertAudioCtx.currentTime;
+      [0, 0.16].forEach(function(offset, i){
+        var osc = alertAudioCtx.createOscillator();
+        var gain = alertAudioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = i === 0 ? 880 : 1108.73;
+        gain.gain.setValueAtTime(0, now + offset);
+        gain.gain.linearRampToValueAtTime(0.22, now + offset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.28);
+        osc.connect(gain); gain.connect(alertAudioCtx.destination);
+        osc.start(now + offset);
+        osc.stop(now + offset + 0.3);
+      });
+    } catch (err){ console.error(err); }
+  }
+
+  // PROGRAMADOR: Requer que o Realtime esteja ativado para a tabela "encomendas"
+  // (Supabase -> Database -> Replication), tal como já está para a tabela "rifas".
+  supabaseClient
+    .channel('encomendas-admin-changes')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'encomendas' }, function(payload){
+      playOrderAlertSound();
+      var nome = (payload.new && payload.new.nome_cliente) || 'cliente';
+      showToast('Nova encomenda: ' + nome);
+      if (!dashboardScreen.hidden) loadOrders();
+    })
+    .subscribe();
 })();
 </script>
