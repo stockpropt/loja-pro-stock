@@ -244,6 +244,22 @@
   .product-info h3{ margin:0; font-size:1.08rem; font-weight:700; letter-spacing:-0.005em; }
   .stock-note{ margin:0 0 8px; font-size:.83rem; color:var(--live-red); font-weight:600; }
   .stock-note.calm{ color:var(--gray-500); font-weight:500; }
+  .product-desc{
+    margin:0 0 8px; font-size:.86rem; color:var(--gray-600); line-height:1.45;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .variant-line{ margin:0 0 4px; font-size:.82rem; color:var(--gray-600); }
+  .variant-line strong{ color:var(--ink); font-weight:700; }
+  .variant-picker{ margin:0 0 10px; }
+  .variant-picker-label{ margin:0 0 6px; font-size:.82rem; font-weight:700; color:var(--ink); }
+  .variant-options{ display:flex; flex-wrap:wrap; gap:8px; }
+  .variant-option{
+    min-width:42px; height:38px; padding:0 14px; border-radius:10px; border:1.5px solid var(--border);
+    background:var(--card-bg); color:var(--ink); font-size:.86rem; font-weight:700; cursor:pointer;
+    transition:border-color .12s ease, background .12s ease, color .12s ease;
+  }
+  .variant-option:hover{ border-color:var(--accent); }
+  .variant-option.selected{ background:var(--accent); border-color:var(--accent); color:#fff; }
   .price-row{ display:flex; align-items:baseline; gap:8px; margin-bottom:14px; font-variant-numeric:tabular-nums; }
   .price{ font-size:1.4rem; font-weight:800; }
   .price-old{ font-size:.92rem; color:var(--gray-500); text-decoration:line-through; }
@@ -755,6 +771,16 @@
     var oldPriceNum = Number(p.preco_antigo);
     var priceOldHtml = (p.preco_antigo != null && oldPriceNum > 0) ?
       '<span class="price-old">' + formatEuro(oldPriceNum) + '</span>' : '';
+    var descHtml = p.descricao ? '<p class="product-desc">' + escapeHtml(p.descricao) + '</p>' : '';
+
+    var sizeOpts = p.tamanhos ? String(p.tamanhos).split(',').map(function(v){ return v.trim(); }).filter(Boolean) : [];
+    var colorOpts = p.cores ? String(p.cores).split(',').map(function(v){ return v.trim(); }).filter(Boolean) : [];
+    var sizesHtml = sizeOpts.length ? renderVariantPicker('Tamanho', 'size', sizeOpts) : '';
+    var colorsHtml = colorOpts.length ? renderVariantPicker('Cor', 'color', colorOpts) : '';
+
+    var buyBtnAttrs = 'data-id="' + escapeHtml(p.id) + '" data-name="' + escapeHtml(p.nome) + '" data-price="' + (Number(p.preco) || 0) + '"' +
+      (sizeOpts.length ? ' data-requires-size="true"' : '') +
+      (colorOpts.length ? ' data-requires-color="true"' : '');
 
     return '<article class="product-card">' +
       '<div class="product-media"><span class="badge ' + badgeClass + '">' + badgeText + '</span>' + discountBadge + mediaHtml + '</div>' +
@@ -762,9 +788,21 @@
         '<h3>' + escapeHtml(p.nome) + '</h3>' +
         stockNoteHtml +
         '<div class="price-row">' + priceOldHtml + '<span class="price">' + formatEuro(Number(p.preco) || 0) + '</span></div>' +
-        '<button class="buy-btn" data-id="' + escapeHtml(p.id) + '" data-name="' + escapeHtml(p.nome) + '" data-price="' + (Number(p.preco) || 0) + '">Comprar Agora</button>' +
+        descHtml + sizesHtml + colorsHtml +
+        '<button class="buy-btn" ' + buyBtnAttrs + '>Comprar Agora</button>' +
       '</div>' +
     '</article>';
+  }
+
+  function renderVariantPicker(label, type, values){
+    var optionsHtml = values.map(function(v){
+      return '<button type="button" class="variant-option" data-variant-type="' + type + '" data-value="' +
+        escapeHtml(v) + '" aria-pressed="false">' + escapeHtml(v) + '</button>';
+    }).join('');
+    return '<div class="variant-picker" data-variant-type="' + type + '">' +
+      '<p class="variant-picker-label">' + label + '</p>' +
+      '<div class="variant-options">' + optionsHtml + '</div>' +
+    '</div>';
   }
 
   async function loadProducts(){
@@ -787,9 +825,41 @@
   }
 
   document.addEventListener('click', function(e){
+    var optBtn = e.target.closest('.variant-option');
+    if (optBtn){
+      var picker = optBtn.closest('.variant-picker');
+      var optCard = optBtn.closest('.product-card');
+      if (!picker || !optCard) return;
+      picker.querySelectorAll('.variant-option').forEach(function(b){
+        b.classList.remove('selected');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      optBtn.classList.add('selected');
+      optBtn.setAttribute('aria-pressed', 'true');
+      var pickerBuyBtn = optCard.querySelector('.buy-btn');
+      if (pickerBuyBtn){
+        if (picker.dataset.variantType === 'size') pickerBuyBtn.dataset.size = optBtn.dataset.value;
+        else if (picker.dataset.variantType === 'color') pickerBuyBtn.dataset.color = optBtn.dataset.value;
+      }
+      return;
+    }
+
     var btn = e.target.closest('.buy-btn');
     if (!btn) return;
-    addToCart(btn.dataset.id, btn.dataset.name, parseFloat(btn.dataset.price), btn);
+    if (btn.dataset.requiresSize === 'true' && !btn.dataset.size){
+      showToast('Escolha um tamanho antes de continuar');
+      return;
+    }
+    if (btn.dataset.requiresColor === 'true' && !btn.dataset.color){
+      showToast('Escolha uma cor antes de continuar');
+      return;
+    }
+    var displayName = btn.dataset.name;
+    var variantParts = [];
+    if (btn.dataset.size) variantParts.push('Tamanho: ' + btn.dataset.size);
+    if (btn.dataset.color) variantParts.push('Cor: ' + btn.dataset.color);
+    if (variantParts.length) displayName += ' (' + variantParts.join(', ') + ')';
+    addToCart(btn.dataset.id, displayName, parseFloat(btn.dataset.price), btn);
   });
 
   // ---- Toast ----
