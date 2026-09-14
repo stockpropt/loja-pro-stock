@@ -1,0 +1,624 @@
+<title>Gestão PRO STOCK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --white:#ffffff; --gray-50:#f5f5f7; --gray-100:#ececee; --gray-200:#d5d5da;
+    --gray-500:#86868b; --gray-600:#6e6e73; --ink:#1d1d1f; --border:#d9d9de; --card-bg:#ffffff;
+    --accent:#0066cc; --accent-hover:#0055ab; --accent-soft:#e8f1fc;
+    --danger:#ff3b30; --danger-hover:#e0332a; --trust-green:#1c7c4d;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.06); --shadow-md:0 12px 28px rgba(0,0,0,.12);
+    --bg-page:var(--white); --radius:18px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --white:#000000; --gray-50:#161618; --gray-100:#1d1d1f; --gray-200:#38383c;
+      --gray-500:#98989d; --gray-600:#a1a1a6; --ink:#f5f5f7; --border:#38383c; --card-bg:#161618;
+      --accent:#2585ff; --accent-hover:#4c9bff; --accent-soft:#0f2440;
+      --danger:#ff453a; --danger-hover:#ff6259; --trust-green:#34d17c;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow-md:0 16px 32px rgba(0,0,0,.55);
+      --bg-page:var(--white);
+    }
+  }
+  :root[data-theme="dark"]{
+    --white:#000000; --gray-50:#161618; --gray-100:#1d1d1f; --gray-200:#38383c;
+    --gray-500:#98989d; --gray-600:#a1a1a6; --ink:#f5f5f7; --border:#38383c; --card-bg:#161618;
+    --accent:#2585ff; --accent-hover:#4c9bff; --accent-soft:#0f2440;
+    --danger:#ff453a; --danger-hover:#ff6259; --trust-green:#34d17c;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow-md:0 16px 32px rgba(0,0,0,.55);
+    --bg-page:var(--white);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg-page); color:var(--ink);
+    font-family:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-size:17px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{ font-family:'Manrope',-apple-system,sans-serif; text-wrap:balance; }
+  button{ font-family:inherit; }
+  img,svg{ max-width:100%; }
+  :focus-visible{ outline:2.5px solid var(--accent); outline-offset:3px; border-radius:6px; }
+  [hidden]{ display:none !important; }
+
+  /* ---------- Login screen ---------- */
+  .login-screen{
+    position:fixed; inset:0; z-index:100; background:#000; color:#fff;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .login-card{ width:min(380px,100%); }
+  .login-lock{
+    width:52px; height:52px; border-radius:50%; background:rgba(255,255,255,.1);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 20px;
+  }
+  .login-lock svg{ width:24px; height:24px; }
+  .login-brand{ text-align:center; font-weight:800; font-size:1.5rem; margin:0 0 4px; letter-spacing:-0.01em; }
+  .login-sub{ text-align:center; color:rgba(255,255,255,.6); margin:0 0 32px; font-size:.96rem; }
+  .login-field{ margin-bottom:16px; }
+  .login-field label{ display:block; font-weight:700; margin-bottom:8px; font-size:.95rem; }
+  .login-field input{
+    width:100%; min-height:54px; padding:0 16px; font-size:1.05rem; font-family:inherit;
+    border-radius:12px; border:1.5px solid rgba(255,255,255,.25); background:rgba(255,255,255,.07); color:#fff;
+  }
+  .login-field input::placeholder{ color:rgba(255,255,255,.4); }
+  .login-field input:focus{ outline:none; border-color:var(--accent); }
+  .login-error{ color:#ff6259; font-size:.9rem; margin:0 0 14px; min-height:1.2em; font-weight:600; }
+  .login-btn{
+    width:100%; min-height:56px; border:none; border-radius:14px; background:var(--accent); color:#fff;
+    font-size:1.05rem; font-weight:800; cursor:pointer; transition:background .15s ease, transform .1s ease;
+  }
+  .login-btn:hover{ background:var(--accent-hover); }
+  .login-btn:active{ transform:scale(.98); }
+  .login-screen.shake .login-card{ animation:shake .35s ease; }
+  @keyframes shake{
+    0%,100%{ transform:translateX(0); } 25%{ transform:translateX(-8px); }
+    75%{ transform:translateX(8px); }
+  }
+  @media (prefers-reduced-motion: reduce){ .login-screen.shake .login-card{ animation:none; } }
+
+  /* ---------- Admin header ---------- */
+  .admin-header{
+    position:sticky; top:0; z-index:20; background:#000; color:#fff;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 18px; min-height:60px;
+  }
+  .admin-header h1{ margin:0; font-size:1.05rem; font-weight:800; letter-spacing:-0.01em; }
+  .logout-btn{
+    border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.08); color:#fff;
+    font-weight:700; padding:9px 16px; border-radius:999px; font-size:.85rem; cursor:pointer;
+    white-space:nowrap; transition:background .15s ease;
+  }
+  .logout-btn:hover{ background:rgba(255,255,255,.16); }
+
+  main{ max-width:720px; margin:0 auto; padding:20px 18px 60px; }
+
+  .admin-tabs{
+    display:flex; gap:6px; background:var(--gray-50); border:1px solid var(--border);
+    border-radius:14px; padding:5px; margin-bottom:22px;
+  }
+  .admin-tab{
+    flex:1; border:none; background:transparent; color:var(--gray-600); cursor:pointer;
+    padding:12px 10px; border-radius:10px; font-size:.98rem; font-weight:700;
+    transition:background .15s ease, color .15s ease;
+  }
+  .admin-tab[aria-selected="true"]{ background:var(--card-bg); color:var(--ink); box-shadow:var(--shadow-sm); }
+
+  [data-admin-panel][hidden]{ display:none; }
+
+  /* ---------- Products tab ---------- */
+  .add-product-btn{
+    width:100%; min-height:58px; border:none; border-radius:14px; background:var(--accent); color:#fff;
+    font-size:1.08rem; font-weight:800; cursor:pointer; margin-bottom:22px;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .add-product-btn:hover{ background:var(--accent-hover); }
+  .add-product-btn:active{ transform:scale(.98); }
+
+  .product-row{
+    display:flex; align-items:center; gap:14px; padding:14px; border:1px solid var(--border);
+    border-radius:16px; background:var(--card-bg); margin-bottom:12px;
+  }
+  .product-thumb{
+    width:56px; height:56px; border-radius:12px; background:var(--gray-50); flex:none;
+    display:flex; align-items:center; justify-content:center; color:var(--gray-500); overflow:hidden;
+  }
+  .product-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .product-details{ flex:1; min-width:0; }
+  .product-details h3{ margin:0 0 4px; font-size:1rem; font-weight:700; }
+  .product-details .price{ font-weight:800; font-variant-numeric:tabular-nums; }
+  .product-actions{ flex:none; display:flex; flex-direction:column; gap:8px; width:120px; }
+  .delete-btn, .edit-btn{
+    border:none; border-radius:12px; padding:0 14px;
+    font-weight:800; font-size:.8rem; cursor:pointer; min-height:52px; line-height:1.15;
+    transition:background .15s ease;
+  }
+  .delete-btn{ background:var(--danger); color:#fff; }
+  .delete-btn:hover{ background:var(--danger-hover); }
+  .edit-btn{ background:#48484a; color:#fff; }
+  .edit-btn:hover{ background:#333335; }
+  .empty-state{ color:var(--gray-500); text-align:center; padding:30px 10px; font-size:.95rem; }
+
+  @media (max-width:420px){
+    .product-row{ flex-wrap:wrap; }
+    .product-actions{ flex-direction:row; width:100%; }
+    .edit-btn, .delete-btn{ flex:1; min-height:48px; }
+  }
+
+  /* ---------- Raffle tab ---------- */
+  .raffle-summary{
+    display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px;
+    font-size:.98rem; font-weight:700;
+  }
+  .raffle-summary .count{ color:var(--danger); font-variant-numeric:tabular-nums; }
+  .raffle-hint{ margin:0 0 16px; font-size:.9rem; color:var(--gray-600); }
+  .admin-raffle-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(48px,1fr)); gap:8px;
+  }
+  .admin-raffle-num{
+    aspect-ratio:1; border-radius:10px; border:1.5px solid var(--border); background:var(--card-bg);
+    color:var(--ink); font-weight:700; font-size:.95rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-variant-numeric:tabular-nums;
+    transition:border-color .12s ease, background .12s ease, color .12s ease;
+  }
+  .admin-raffle-num:hover{ border-color:var(--accent); }
+  .admin-raffle-num.sold{ background:var(--gray-200); border-color:var(--gray-200); color:var(--gray-600); }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:70;
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
+  }
+  .modal-overlay.open{ opacity:1; pointer-events:auto; }
+  .admin-modal{
+    position:fixed; top:50%; left:50%; z-index:80; width:min(440px,92vw);
+    max-height:86vh; overflow-y:auto; background:var(--card-bg); border-radius:24px;
+    box-shadow:var(--shadow-md); padding:30px 28px 28px;
+    transform:translate(-50%,-50%) scale(.92); opacity:0; pointer-events:none;
+    transition:opacity .25s ease, transform .25s cubic-bezier(.32,.72,0,1);
+  }
+  .admin-modal.open{ opacity:1; transform:translate(-50%,-50%) scale(1); pointer-events:auto; }
+  .admin-modal h2{ font-size:1.3rem; margin:0 0 20px; padding-right:40px; }
+  .modal-close{
+    position:absolute; top:18px; right:18px; width:42px; height:42px; border-radius:50%;
+    border:1px solid var(--border); background:var(--gray-50); color:var(--ink); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close svg{ width:20px; height:20px; }
+  .field{ margin-bottom:16px; }
+  .field label{ display:block; font-size:.95rem; font-weight:700; margin-bottom:7px; }
+  .field input, .field select{
+    width:100%; min-height:52px; padding:0 15px; font-size:1.02rem; font-family:inherit;
+    border:1.5px solid var(--border); border-radius:12px; background:var(--card-bg); color:var(--ink);
+  }
+  .field input:focus, .field select:focus{ outline:none; border-color:var(--accent); }
+  .field input[type="file"]{ padding:10px 12px; font-size:.92rem; }
+  .field-hint{ margin:6px 0 0; font-size:.82rem; color:var(--gray-600); }
+  .save-btn{
+    width:100%; min-height:54px; border:none; border-radius:12px; background:var(--accent); color:#fff;
+    font-size:1.02rem; font-weight:800; cursor:pointer; margin-top:6px;
+  }
+  .save-btn:hover{ background:var(--accent-hover); }
+
+  .toast{
+    position:fixed; left:50%; bottom:26px; transform:translate(-50%,20px); z-index:90;
+    background:var(--ink); color:var(--bg-page); padding:13px 22px; border-radius:999px;
+    font-size:.92rem; font-weight:600; box-shadow:var(--shadow-md);
+    opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+  }
+  .toast.show{ opacity:1; transform:translate(-50%,0); }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.4" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/><circle cx="12" cy="15" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-box" viewBox="0 0 32 32"><path d="M16 3 4 9v14l12 6 12-6V9z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M4 9l12 6 12-6M16 15v14" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-lock"><svg aria-hidden="true"><use href="#i-lock"/></svg></div>
+    <h1 class="login-brand">PRO STOCK</h1>
+    <p class="login-sub">Painel de gestão privado</p>
+    <form id="loginForm" novalidate>
+      <div class="login-field">
+        <label for="adminPassword">Palavra-passe</label>
+        <input type="password" id="adminPassword" name="adminPassword" autocomplete="current-password" placeholder="Introduza a palavra-passe" required>
+      </div>
+      <p class="login-error" id="loginError"></p>
+      <button type="submit" class="login-btn">Entrar</button>
+    </form>
+  </div>
+</div>
+
+<div id="dashboardScreen" hidden>
+  <header class="admin-header">
+    <h1>PRO STOCK - Gestão</h1>
+    <button class="logout-btn" id="logoutBtn" type="button">Sair</button>
+  </header>
+
+  <main>
+    <div class="admin-tabs" role="tablist" aria-label="Secções de gestão">
+      <button class="admin-tab" role="tab" id="adminTabProdutos" aria-controls="painelProdutos" aria-selected="true" data-target="painelProdutos">Produtos</button>
+      <button class="admin-tab" role="tab" id="adminTabRifa" aria-controls="painelRifa" aria-selected="false" data-target="painelRifa">Rifa</button>
+    </div>
+
+    <section id="painelProdutos" data-admin-panel role="tabpanel" aria-labelledby="adminTabProdutos">
+      <button class="add-product-btn" id="addProductBtn" type="button">+ Adicionar Produto</button>
+      <div id="productList"></div>
+    </section>
+
+    <section id="painelRifa" data-admin-panel hidden role="tabpanel" aria-labelledby="adminTabRifa">
+      <div class="raffle-summary">
+        <span>Números do sorteio</span>
+        <span class="count" id="raffleSoldCount">0 de 100 vendidos</span>
+      </div>
+      <p class="raffle-hint">Toque num número branco para o marcar como vendido. Toque num número cinzento para o libertar outra vez.</p>
+      <div class="admin-raffle-grid" id="adminRaffleGrid" role="group" aria-label="Gestão dos números do sorteio, de 1 a 100"></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-overlay" id="productModalOverlay"></div>
+<div class="admin-modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="productModalTitle" aria-hidden="true">
+  <button class="modal-close" id="productModalClose" aria-label="Fechar"><svg><use href="#i-close"/></svg></button>
+  <h2 id="productModalTitle">Adicionar Produto</h2>
+  <form id="productForm" novalidate>
+    <div class="field">
+      <label for="productName">Nome</label>
+      <input type="text" id="productName" name="productName" required>
+    </div>
+    <div class="field">
+      <label for="productPrice">Preço (€)</label>
+      <input type="number" id="productPrice" name="productPrice" min="0" step="0.01" inputmode="decimal" required>
+    </div>
+    <div class="field">
+      <label for="productCondition">Condição</label>
+      <select id="productCondition" name="productCondition">
+        <option value="novo">Novo</option>
+        <option value="usado">Usado</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="productOldPrice">Preço Antigo (€) - opcional</label>
+      <input type="number" id="productOldPrice" name="productOldPrice" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 129.90">
+      <p class="field-hint">Aparece riscado ao lado do preço atual. Deixe em branco se não houver desconto.</p>
+    </div>
+    <div class="field">
+      <label for="productDiscountTag">Etiqueta de Desconto - opcional</label>
+      <input type="text" id="productDiscountTag" name="productDiscountTag" placeholder="Ex.: -30%">
+      <p class="field-hint">Aparece como bolinha vermelha no canto do produto. Deixe em branco para não mostrar.</p>
+    </div>
+    <div class="field">
+      <label for="productStockNote">Nota de Stock - opcional</label>
+      <input type="text" id="productStockNote" name="productStockNote" placeholder="Ex.: Última unidade">
+      <p class="field-hint">Aparece por baixo do nome do produto. Deixe em branco para não mostrar.</p>
+    </div>
+    <div class="field">
+      <label for="productPhoto">Foto do Produto - opcional</label>
+      <input type="file" id="productPhoto" name="productPhoto" accept="image/*">
+      <p class="field-hint" id="currentPhotoHint" hidden>Já existe uma foto para este produto. Escolha um novo ficheiro só se quiser substituí-la.</p>
+    </div>
+    <button type="submit" class="save-btn" id="productSaveBtn">Guardar Produto</button>
+  </form>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- Ligação ao Supabase ----
+  var supabaseUrl = 'https://icryqtuvergogwtmlbgj.supabase.co';
+  var supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljcnlxdHV2ZXJnb2d3dG1sYmdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNzg5MjYsImV4cCI6MjEwNDk1NDkyNn0.i5Xtltajw6KllVg2UH3v77SzIFGtUwF7PR0y6tat5Ac';
+  // Nota: usa-se "supabaseClient" (e não "supabase") para não colidir com o objeto
+  // global "supabase" que o script da CDN cria - chamar supabase.createClient()
+  // e guardar o resultado numa variável também chamada "supabase" dá erro.
+  var supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  // Palavra-passe de demonstração - a substituir pela autenticação real do Supabase.
+  var ADMIN_PASSWORD = 'prostock2026';
+
+  var loginScreen = document.getElementById('loginScreen');
+  var loginForm = document.getElementById('loginForm');
+  var loginError = document.getElementById('loginError');
+  var dashboardScreen = document.getElementById('dashboardScreen');
+
+  loginForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var value = document.getElementById('adminPassword').value;
+    // PROGRAMADOR: Ligar aqui a função do Supabase (verificar sessão/autenticação real)
+    if (value === ADMIN_PASSWORD){
+      loginScreen.hidden = true;
+      dashboardScreen.hidden = false;
+      loadProducts();
+      loadRaffleGrid();
+    } else {
+      loginError.textContent = 'Palavra-passe incorreta. Tente novamente.';
+      loginScreen.classList.remove('shake'); void loginScreen.offsetWidth; loginScreen.classList.add('shake');
+    }
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', function(){
+    dashboardScreen.hidden = true;
+    loginScreen.hidden = false;
+    loginError.textContent = '';
+    document.getElementById('adminPassword').value = '';
+  });
+
+  // ---- Toast ----
+  var toastTimer;
+  function showToast(msg){
+    var toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
+  }
+
+  // ---- Tabs ----
+  var adminTabs = document.querySelectorAll('.admin-tab');
+  var adminPanels = document.querySelectorAll('[data-admin-panel]');
+  adminTabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      adminTabs.forEach(function(t){ t.setAttribute('aria-selected', String(t === tab)); });
+      adminPanels.forEach(function(p){ p.hidden = (p.id !== tab.dataset.target); });
+    });
+  });
+
+  // ---- Products (ligado ao Supabase, tabela "produtos") ----
+  var products = [];
+
+  function formatEuro(n){
+    return '€' + Number(n).toFixed(2).replace('.', ',');
+  }
+
+  async function loadProducts(){
+    var list = document.getElementById('productList');
+    list.innerHTML = '<p class="empty-state">A carregar produtos...</p>';
+    var result = await supabaseClient.from('produtos').select('*').order('id');
+    if (result.error){
+      console.error(result.error);
+      list.innerHTML = '<p class="empty-state">Não foi possível carregar os produtos.</p>';
+      showToast('Erro ao carregar produtos');
+      return;
+    }
+    products = result.data || [];
+    renderProducts();
+  }
+
+  function renderProducts(){
+    var list = document.getElementById('productList');
+    if (products.length === 0){
+      list.innerHTML = '<p class="empty-state">Ainda não há produtos. Toque em "+ Adicionar Produto" para começar.</p>';
+      return;
+    }
+    list.innerHTML = products.map(function(p){
+      var thumb = p.imagem ?
+        '<img src="' + p.imagem + '" alt="" onerror="this.parentElement.innerHTML=\'<svg aria-hidden=&quot;true&quot;><use href=&quot;#i-box&quot;/></svg>\'">' :
+        '<svg aria-hidden="true"><use href="#i-box"/></svg>';
+      return '<div class="product-row">' +
+        '<div class="product-thumb">' + thumb + '</div>' +
+        '<div class="product-details"><h3>' + p.nome + '</h3><span class="price">' + formatEuro(p.preco) + '</span></div>' +
+        '<div class="product-actions">' +
+          '<button type="button" class="edit-btn" data-id="' + p.id + '">Editar</button>' +
+          '<button type="button" class="delete-btn" data-id="' + p.id + '">VENDIDO /<br>APAGAR</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  document.getElementById('productList').addEventListener('click', async function(e){
+    var deleteBtn = e.target.closest('.delete-btn');
+    if (deleteBtn){
+      var deleteId = deleteBtn.dataset.id;
+      // PROGRAMADOR: Ligar aqui a função do Supabase (marcar como vendido / apagar produto na base de dados)
+      var deleteResult = await supabaseClient.from('produtos').delete().eq('id', deleteId);
+      if (deleteResult.error){
+        console.error(deleteResult.error);
+        showToast('Erro ao remover produto');
+        return;
+      }
+      await loadProducts();
+      showToast('Produto removido da montra');
+      return;
+    }
+    var editBtn = e.target.closest('.edit-btn');
+    if (editBtn){
+      var editId = editBtn.dataset.id;
+      var product = products.find(function(p){ return String(p.id) === editId; });
+      if (product) openProductModal(product);
+    }
+  });
+
+  // ---- Add product modal ----
+  var productModal = document.getElementById('productModal');
+  var productModalOverlay = document.getElementById('productModalOverlay');
+  var productForm = document.getElementById('productForm');
+  var productModalTitle = document.getElementById('productModalTitle');
+  var productSaveBtn = document.getElementById('productSaveBtn');
+  var editingProductId = null;
+  var editingProductImage = null;
+
+  function openProductModal(product){
+    var currentPhotoHint = document.getElementById('currentPhotoHint');
+    if (product){
+      editingProductId = product.id;
+      editingProductImage = product.imagem || null;
+      productModalTitle.textContent = 'Editar Produto';
+      productSaveBtn.textContent = 'Guardar Alterações';
+      document.getElementById('productName').value = product.nome;
+      document.getElementById('productPrice').value = product.preco;
+      document.getElementById('productCondition').value = (String(product.condicao || '').trim().toLowerCase() === 'usado') ? 'usado' : 'novo';
+      document.getElementById('productOldPrice').value = (product.preco_antigo != null) ? product.preco_antigo : '';
+      document.getElementById('productDiscountTag').value = product.etiqueta_desconto || '';
+      document.getElementById('productStockNote').value = product.nota_stock || '';
+      document.getElementById('productPhoto').value = '';
+      currentPhotoHint.hidden = !editingProductImage;
+    } else {
+      editingProductId = null;
+      editingProductImage = null;
+      productModalTitle.textContent = 'Adicionar Produto';
+      productSaveBtn.textContent = 'Guardar Produto';
+      productForm.reset();
+      currentPhotoHint.hidden = true;
+    }
+    productModal.classList.add('open'); productModalOverlay.classList.add('open');
+    productModal.setAttribute('aria-hidden', 'false');
+    document.getElementById('productName').focus();
+  }
+  function closeProductModal(){
+    productModal.classList.remove('open'); productModalOverlay.classList.remove('open');
+    productModal.setAttribute('aria-hidden', 'true');
+  }
+
+  document.getElementById('addProductBtn').addEventListener('click', function(){ openProductModal(); });
+  document.getElementById('productModalClose').addEventListener('click', closeProductModal);
+  productModalOverlay.addEventListener('click', closeProductModal);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeProductModal(); });
+
+  productForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    if (!productForm.reportValidity()) return;
+
+    var nome = document.getElementById('productName').value.trim();
+    var preco = parseFloat(document.getElementById('productPrice').value);
+    var condicao = document.getElementById('productCondition').value;
+    var oldPriceRaw = document.getElementById('productOldPrice').value.trim();
+    var precoAntigo = oldPriceRaw === '' ? null : parseFloat(oldPriceRaw);
+    var etiquetaDesconto = document.getElementById('productDiscountTag').value.trim() || null;
+    var notaStock = document.getElementById('productStockNote').value.trim() || null;
+    var photoFile = document.getElementById('productPhoto').files[0] || null;
+
+    var originalBtnText = productSaveBtn.textContent;
+    function restoreSaveBtn(){
+      productSaveBtn.disabled = false;
+      productSaveBtn.textContent = originalBtnText;
+    }
+
+    productSaveBtn.disabled = true;
+    if (photoFile) productSaveBtn.textContent = 'A carregar foto e produto...';
+
+    // Mantém a foto atual (em edição) a menos que um novo ficheiro seja escolhido.
+    var imagem = editingProductImage;
+
+    if (photoFile){
+      // A) Upload do ficheiro para o bucket "produtos" no Supabase Storage,
+      // com um nome único baseado na data atual.
+      var fileExt = photoFile.name.indexOf('.') > -1 ? photoFile.name.split('.').pop() : 'jpg';
+      var fileName = Date.now() + '.' + fileExt;
+      var uploadResult = await supabaseClient.storage.from('produtos').upload(fileName, photoFile);
+      if (uploadResult.error){
+        console.error(uploadResult.error);
+        showToast('Erro ao carregar a foto');
+        restoreSaveBtn();
+        return;
+      }
+      // B) Obtém o URL público da foto que acabou de ser carregada.
+      var publicUrlResult = supabaseClient.storage.from('produtos').getPublicUrl(fileName);
+      imagem = publicUrlResult.data.publicUrl;
+    }
+
+    // C) Grava o produto na tabela "produtos", com o URL da foto no campo "imagem".
+    var payload = {
+      nome: nome,
+      preco: preco,
+      imagem: imagem || '',
+      condicao: condicao,
+      preco_antigo: precoAntigo,
+      etiqueta_desconto: etiquetaDesconto,
+      nota_stock: notaStock
+    };
+
+    if (editingProductId !== null){
+      // PROGRAMADOR: Ligar edição ao Supabase
+      var updateResult = await supabaseClient.from('produtos')
+        .update(payload)
+        .eq('id', editingProductId);
+      if (updateResult.error){
+        console.error(updateResult.error);
+        showToast('Erro ao guardar alterações');
+        restoreSaveBtn();
+        return;
+      }
+      await loadProducts();
+      productForm.reset();
+      closeProductModal();
+      showToast('Produto atualizado');
+    } else {
+      // PROGRAMADOR: Ligar aqui a função do Supabase (inserir novo produto na base de dados)
+      var insertResult = await supabaseClient.from('produtos')
+        .insert(payload);
+      if (insertResult.error){
+        console.error(insertResult.error);
+        showToast('Erro ao adicionar produto');
+        restoreSaveBtn();
+        return;
+      }
+      await loadProducts();
+      productForm.reset();
+      closeProductModal();
+      showToast('Produto adicionado à montra');
+    }
+
+    restoreSaveBtn();
+  });
+
+  // ---- Raffle grid (ligado ao Supabase, tabela "rifas": numero, estado) ----
+  // Assume que a tabela "rifas" já tem 100 linhas semeadas (numero 1 a 100,
+  // estado 'disponivel') - este código só lê e atualiza linhas existentes.
+  var raffleRows = [];
+
+  async function loadRaffleGrid(){
+    var grid = document.getElementById('adminRaffleGrid');
+    grid.innerHTML = '<p class="empty-state">A carregar números...</p>';
+    var result = await supabaseClient.from('rifas').select('*').order('numero');
+    if (result.error){
+      console.error(result.error);
+      grid.innerHTML = '<p class="empty-state">Não foi possível carregar os números da rifa.</p>';
+      showToast('Erro ao carregar a rifa');
+      return;
+    }
+    raffleRows = result.data || [];
+    renderAdminRaffleGrid();
+  }
+
+  function renderAdminRaffleGrid(){
+    var grid = document.getElementById('adminRaffleGrid');
+    if (raffleRows.length === 0){
+      grid.innerHTML = '<p class="empty-state">Sem números encontrados na tabela "rifas".</p>';
+      document.getElementById('raffleSoldCount').textContent = '0 de 0 vendidos';
+      return;
+    }
+    var soldCount = 0;
+    grid.innerHTML = raffleRows.map(function(row){
+      var sold = row.estado === 'vendido';
+      if (sold) soldCount++;
+      return '<button type="button" class="admin-raffle-num' + (sold ? ' sold' : '') +
+        '" data-num="' + row.numero + '" aria-pressed="' + (sold ? 'true' : 'false') + '">' + row.numero + '</button>';
+    }).join('');
+    document.getElementById('raffleSoldCount').textContent = soldCount + ' de ' + raffleRows.length + ' vendidos';
+  }
+
+  document.getElementById('adminRaffleGrid').addEventListener('click', async function(e){
+    var btn = e.target.closest('.admin-raffle-num');
+    if (!btn) return;
+    var n = parseInt(btn.dataset.num, 10);
+    var row = raffleRows.find(function(r){ return r.numero === n; });
+    if (!row) return;
+    var novoEstado = row.estado === 'vendido' ? 'disponivel' : 'vendido';
+    // PROGRAMADOR: Ligar aqui a função do Supabase (atualizar estado do número do sorteio)
+    var result = await supabaseClient.from('rifas').update({ estado: novoEstado }).eq('numero', n);
+    if (result.error){
+      console.error(result.error);
+      showToast('Erro ao atualizar número');
+      return;
+    }
+    row.estado = novoEstado;
+    renderAdminRaffleGrid();
+  });
+})();
+</script>
