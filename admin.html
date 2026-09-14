@@ -200,6 +200,22 @@
   }
   .field textarea:focus{ outline:none; border-color:var(--accent); }
   .field-hint{ margin:6px 0 0; font-size:.82rem; color:var(--gray-600); }
+  .photo-preview-grid{ display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+  .photo-preview-item{
+    position:relative; width:64px; height:64px; border-radius:10px; overflow:hidden;
+    background:var(--gray-50); border:1px solid var(--border); flex:none;
+  }
+  .photo-preview-item img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .photo-preview-remove{
+    position:absolute; top:2px; right:2px; width:20px; height:20px; border-radius:50%;
+    border:none; background:rgba(0,0,0,.65); color:#fff; font-size:.8rem; font-weight:800;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;
+  }
+  .photo-preview-remove:hover{ background:rgba(0,0,0,.85); }
+  .photo-preview-primary-tag{
+    position:absolute; left:0; right:0; bottom:0; font-size:.6rem; font-weight:700; text-align:center;
+    background:rgba(0,0,0,.55); color:#fff; padding:2px 0; letter-spacing:.02em;
+  }
   .save-btn{
     width:100%; min-height:54px; border:none; border-radius:12px; background:var(--accent); color:#fff;
     font-size:1.02rem; font-weight:800; cursor:pointer; margin-top:6px;
@@ -318,9 +334,10 @@
       <p class="field-hint">Separe por vírgulas. Deixe em branco se não se aplicar a este produto.</p>
     </div>
     <div class="field">
-      <label for="productPhoto">Foto do Produto - opcional</label>
-      <input type="file" id="productPhoto" name="productPhoto" accept="image/*">
-      <p class="field-hint" id="currentPhotoHint" hidden>Já existe uma foto para este produto. Escolha um novo ficheiro só se quiser substituí-la.</p>
+      <label for="productPhotos">Fotos do Produto - opcional</label>
+      <input type="file" id="productPhotos" name="productPhotos" accept="image/*" multiple>
+      <p class="field-hint">Pode escolher várias fotos de uma vez, ou adicionar mais depois de escolher as primeiras. A primeira foto da lista é usada como foto principal na montra.</p>
+      <div class="photo-preview-grid" id="photoPreviewGrid"></div>
     </div>
     <button type="submit" class="save-btn" id="productSaveBtn">Guardar Produto</button>
   </form>
@@ -390,7 +407,7 @@
     });
   });
 
-  // ---- Products (ligado ao Supabase, tabela "produtos") ----
+  // ---- Products (ligado ao Supabase, tabela "produtos": id, nome, preco, imagem, imagens) ----
   var products = [];
 
   function formatEuro(n){
@@ -462,13 +479,48 @@
   var productModalTitle = document.getElementById('productModalTitle');
   var productSaveBtn = document.getElementById('productSaveBtn');
   var editingProductId = null;
-  var editingProductImage = null;
+  var existingProductImages = [];
+  var pendingNewPhotoFiles = [];
+
+  // ---- Gestão de múltiplas fotos (pré-visualização, remoção individual, upload posterior) ----
+  function renderPhotoPreview(){
+    var grid = document.getElementById('photoPreviewGrid');
+    var items = [];
+    existingProductImages.forEach(function(url, idx){ items.push({ type: 'existing', src: url, idx: idx }); });
+    pendingNewPhotoFiles.forEach(function(file, idx){ items.push({ type: 'pending', src: URL.createObjectURL(file), idx: idx }); });
+    if (!items.length){ grid.innerHTML = ''; return; }
+    grid.innerHTML = items.map(function(item, pos){
+      return '<div class="photo-preview-item">' +
+        '<img src="' + item.src + '" alt="">' +
+        (pos === 0 ? '<span class="photo-preview-primary-tag">Principal</span>' : '') +
+        '<button type="button" class="photo-preview-remove" data-type="' + item.type + '" data-idx="' + item.idx + '" aria-label="Remover foto">&times;</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  document.getElementById('productPhotos').addEventListener('change', function(e){
+    var files = Array.prototype.slice.call(e.target.files || []);
+    files.forEach(function(f){ pendingNewPhotoFiles.push(f); });
+    e.target.value = '';
+    renderPhotoPreview();
+  });
+
+  document.getElementById('photoPreviewGrid').addEventListener('click', function(e){
+    var removeBtn = e.target.closest('.photo-preview-remove');
+    if (!removeBtn) return;
+    var idx = parseInt(removeBtn.dataset.idx, 10);
+    if (removeBtn.dataset.type === 'existing'){ existingProductImages.splice(idx, 1); }
+    else { pendingNewPhotoFiles.splice(idx, 1); }
+    renderPhotoPreview();
+  });
 
   function openProductModal(product){
-    var currentPhotoHint = document.getElementById('currentPhotoHint');
     if (product){
       editingProductId = product.id;
-      editingProductImage = product.imagem || null;
+      existingProductImages = product.imagens ?
+        String(product.imagens).split(',').map(function(v){ return v.trim(); }).filter(Boolean) :
+        (product.imagem ? [String(product.imagem).trim()].filter(Boolean) : []);
+      pendingNewPhotoFiles = [];
       productModalTitle.textContent = 'Editar Produto';
       productSaveBtn.textContent = 'Guardar Alterações';
       document.getElementById('productName').value = product.nome;
@@ -480,16 +532,16 @@
       document.getElementById('productDescription').value = product.descricao || '';
       document.getElementById('productSizes').value = product.tamanhos || '';
       document.getElementById('productColors').value = product.cores || '';
-      document.getElementById('productPhoto').value = '';
-      currentPhotoHint.hidden = !editingProductImage;
+      document.getElementById('productPhotos').value = '';
     } else {
       editingProductId = null;
-      editingProductImage = null;
+      existingProductImages = [];
+      pendingNewPhotoFiles = [];
       productModalTitle.textContent = 'Adicionar Produto';
       productSaveBtn.textContent = 'Guardar Produto';
       productForm.reset();
-      currentPhotoHint.hidden = true;
     }
+    renderPhotoPreview();
     productModal.classList.add('open'); productModalOverlay.classList.add('open');
     productModal.setAttribute('aria-hidden', 'false');
     document.getElementById('productName').focus();
@@ -497,6 +549,9 @@
   function closeProductModal(){
     productModal.classList.remove('open'); productModalOverlay.classList.remove('open');
     productModal.setAttribute('aria-hidden', 'true');
+    existingProductImages = [];
+    pendingNewPhotoFiles = [];
+    renderPhotoPreview();
   }
 
   document.getElementById('addProductBtn').addEventListener('click', function(){ openProductModal(); });
@@ -518,7 +573,6 @@
     var descricao = document.getElementById('productDescription').value.trim() || null;
     var tamanhos = document.getElementById('productSizes').value.trim() || null;
     var cores = document.getElementById('productColors').value.trim() || null;
-    var photoFile = document.getElementById('productPhoto').files[0] || null;
 
     var originalBtnText = productSaveBtn.textContent;
     function restoreSaveBtn(){
@@ -527,33 +581,38 @@
     }
 
     productSaveBtn.disabled = true;
-    if (photoFile) productSaveBtn.textContent = 'A carregar foto e produto...';
+    if (pendingNewPhotoFiles.length) productSaveBtn.textContent = 'A carregar fotos e produto...';
 
-    // Mantém a foto atual (em edição) a menos que um novo ficheiro seja escolhido.
-    var imagem = editingProductImage;
-
-    if (photoFile){
+    // Mantém as fotos já existentes (em edição) e junta as novas que foram escolhidas.
+    var uploadedUrls = [];
+    for (var photoIdx = 0; photoIdx < pendingNewPhotoFiles.length; photoIdx++){
+      var photoFile = pendingNewPhotoFiles[photoIdx];
       // A) Upload do ficheiro para o bucket "produtos" no Supabase Storage,
       // com um nome único baseado na data atual.
       var fileExt = photoFile.name.indexOf('.') > -1 ? photoFile.name.split('.').pop() : 'jpg';
-      var fileName = Date.now() + '.' + fileExt;
+      var fileName = Date.now() + '-' + photoIdx + '.' + fileExt;
       var uploadResult = await supabaseClient.storage.from('produtos').upload(fileName, photoFile);
       if (uploadResult.error){
         console.error(uploadResult.error);
-        showToast('Erro ao carregar a foto');
+        showToast('Erro ao carregar uma das fotos');
         restoreSaveBtn();
         return;
       }
       // B) Obtém o URL público da foto que acabou de ser carregada.
       var publicUrlResult = supabaseClient.storage.from('produtos').getPublicUrl(fileName);
-      imagem = publicUrlResult.data.publicUrl;
+      uploadedUrls.push(publicUrlResult.data.publicUrl);
     }
 
-    // C) Grava o produto na tabela "produtos", com o URL da foto no campo "imagem".
+    var finalImages = existingProductImages.concat(uploadedUrls);
+    var imagensStr = finalImages.length ? finalImages.join(', ') : null;
+
+    // C) Grava o produto na tabela "produtos" - "imagem" guarda a foto principal (a primeira
+    // da lista), por compatibilidade, e "imagens" guarda todas as fotos separadas por vírgulas.
     var payload = {
       nome: nome,
       preco: preco,
-      imagem: imagem || '',
+      imagem: finalImages.length ? finalImages[0] : '',
+      imagens: imagensStr,
       condicao: condicao,
       preco_antigo: precoAntigo,
       etiqueta_desconto: etiquetaDesconto,
