@@ -1,4 +1,19 @@
 <title>PRO STOCK</title>
+<meta name="description" content="PRO STOCK - loja online de live-sale em Portugal: produtos novos e usados, rifas com números e entregas rápidas. Vê as novidades, os destaques e o stock disponível." id="metaDescription">
+<link rel="canonical" href="https://prostock.pt/" id="canonicalLink">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PRO STOCK">
+<meta property="og:locale" content="pt_PT">
+<meta property="og:url" content="https://prostock.pt/" id="ogUrl">
+<meta property="og:title" content="PRO STOCK - Live-sale de produtos novos e usados" id="ogTitle">
+<meta property="og:description" content="Produtos novos e usados, rifas com números e entregas rápidas em Portugal. Vê as novidades e os destaques da loja." id="ogDescription">
+<meta property="og:image" content="https://prostock.pt/imagens/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PRO STOCK - Live-sale de produtos novos e usados" id="twitterTitle">
+<meta name="twitter:description" content="Produtos novos e usados, rifas com números e entregas rápidas em Portugal." id="twitterDescription">
+<meta name="twitter:image" content="https://prostock.pt/imagens/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Public+Sans:wght@400;500;600;700&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -166,6 +181,27 @@
   @keyframes badgePulse{ 0%{transform:scale(1);} 40%{transform:scale(1.45);} 100%{transform:scale(1);} }
 
   /* ---------- Live banner ---------- */
+  /* ---------- Imagem de hero (opcional, definida no admin) ---------- */
+  .hero-section{ position:relative; width:100%; max-height:420px; overflow:hidden; background:var(--gray-100); }
+  .hero-img{ width:100%; max-height:420px; object-fit:cover; display:block; }
+  .hero-overlay{
+    position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center;
+    padding:0 44px; color:#fff;
+    background:linear-gradient(90deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.18) 55%, rgba(0,0,0,0) 100%);
+  }
+  .hero-titulo{ margin:0 0 8px; font-size:2.1rem; font-weight:800; max-width:580px; text-wrap:balance; }
+  .hero-subtitulo{ margin:0; font-size:1.05rem; max-width:520px; color:rgba(255,255,255,.92); }
+  @media (max-width:640px){
+    .hero-section{ max-height:220px; }
+    .hero-img{ max-height:220px; }
+    .hero-overlay{
+      padding:0 20px 18px; align-items:flex-start; justify-content:flex-end;
+      background:linear-gradient(180deg, rgba(0,0,0,.1) 0%, rgba(0,0,0,.6) 100%);
+    }
+    .hero-titulo{ font-size:1.3rem; }
+    .hero-subtitulo{ font-size:.88rem; }
+  }
+
   .live-banner{
     position:sticky; top:var(--header-h); z-index:50;
     background:var(--ink); color:var(--bg-page);
@@ -209,6 +245,32 @@
 
   /* ---------- Layout ---------- */
   main{ max-width:1180px; margin:0 auto; padding:0 20px; }
+
+  /* ---------- Menu de páginas (Início/Novidades/Destaques/Produtos/Usados) ---------- */
+  .page-nav{
+    max-width:1180px; margin:0 auto; padding:14px 20px; display:flex; gap:8px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .page-nav::-webkit-scrollbar{ display:none; }
+  .page-nav-link{
+    flex:none; display:inline-flex; align-items:center; white-space:nowrap;
+    padding:10px 18px; border-radius:999px; background:var(--gray-50); border:1px solid var(--border);
+    color:var(--ink); font-weight:700; font-size:.92rem; text-decoration:none;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .page-nav-link:hover{ background:var(--gray-100); }
+  .page-nav-link[aria-current="page"]{ background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  /* ---------- Páginas dedicadas (Produtos/Usados/Destaques/Novidades) ---------- */
+  .dedicated-page{ max-width:1180px; margin:0 auto; padding:8px 20px 40px; }
+  .dedicated-page-head{
+    display:flex; align-items:baseline; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    padding:20px 0 10px; border-bottom:1px solid var(--border); margin-bottom:26px;
+  }
+  .dedicated-page-head h1{ font-size:clamp(1.5rem,3.6vw,2.1rem); font-weight:800; margin:0; letter-spacing:-0.02em; }
+  .dedicated-back{ color:var(--accent); font-weight:700; font-size:.92rem; text-decoration:none; white-space:nowrap; }
+  .dedicated-back:hover{ text-decoration:underline; }
+  .dedicated-page-sub{ color:var(--gray-600); font-size:.95rem; margin:-16px 0 22px; }
   .intro{ padding:52px 0 34px; max-width:660px; }
   .intro-eyebrow{
     display:inline-flex; align-items:center; gap:7px; margin:0 0 14px;
@@ -348,6 +410,7 @@
   .badge.condition-new{ background:var(--trust-green-soft); color:var(--trust-green); }
   .badge.condition-used{ background:var(--used-amber-soft); color:var(--used-amber); }
   .badge.discount{ top:12px; left:auto; right:12px; background:var(--live-red); color:#fff; }
+  .badge.badge-esgotado{ background:var(--ink); color:var(--bg-page); }
 
   /* Selo de estado de conservação para artigos usados */
   .badge.state-grade_a{ background:var(--trust-green-soft); color:var(--trust-green); }
@@ -421,6 +484,10 @@
   .buy-btn:hover{ background:var(--accent-hover); box-shadow:0 8px 18px rgba(0,0,0,.16); }
   .buy-btn:active{ transform:scale(.98); }
   .buy-btn.added{ background:var(--trust-green); }
+  .buy-btn.buy-btn-esgotado{
+    background:var(--gray-200); color:var(--gray-600); cursor:not-allowed; box-shadow:none;
+  }
+  .buy-btn.buy-btn-esgotado:hover{ background:var(--gray-200); box-shadow:none; }
 
   [data-panel][hidden]{ display:none; }
 
@@ -577,6 +644,7 @@
   }
   .my-order-state.state-entregue{ background:var(--trust-green-soft); color:var(--trust-green); }
   .my-order-state.state-pendente{ background:var(--gray-100); color:var(--gray-600); }
+  .my-order-state.state-cancelada{ background:var(--live-red-soft); color:var(--live-red); }
   .my-order-items{ margin:0 0 10px; padding-left:18px; font-size:.9rem; color:var(--ink); }
   .my-order-items li{ margin-bottom:2px; }
   .my-order-total{ font-weight:800; font-variant-numeric:tabular-nums; text-align:right; }
@@ -732,10 +800,27 @@
   </div>
 </header>
 
+<nav class="page-nav" id="pageNav" aria-label="Páginas da loja">
+  <a class="page-nav-link" data-route="" href="#/">Início</a>
+  <a class="page-nav-link" data-route="novidades" href="#/novidades">Novidades</a>
+  <a class="page-nav-link" data-route="destaques" href="#/destaques">Destaques</a>
+  <a class="page-nav-link" data-route="produtos" href="#/produtos">Produtos</a>
+  <a class="page-nav-link" data-route="usados" href="#/usados">Usados</a>
+</nav>
+
+<div id="homeView">
+<section class="hero-section" id="heroSection" hidden>
+  <img class="hero-img" id="heroImg" src="" alt="PRO STOCK" draggable="false">
+  <div class="hero-overlay">
+    <h2 class="hero-titulo" id="heroTitulo" hidden></h2>
+    <p class="hero-subtitulo" id="heroSubtitulo" hidden></p>
+  </div>
+</section>
+
 <div class="live-banner">
   <div class="live-banner-inner">
     <span class="live-pill"><span class="live-dot"></span>DIRETO</span>
-    <p>Estamos em direto agora - aproveite as oportunidades antes que acabem.</p>
+    <p id="liveBannerText">Estamos em direto agora - aproveite as oportunidades antes que acabem.</p>
   </div>
 </div>
 
@@ -774,9 +859,9 @@
   </section>
 
   <section class="intro">
-    <span class="intro-eyebrow">Ao vivo agora</span>
-    <h1>A loja oficial da live.</h1>
-    <p>Material novo e usado, revisto peça a peça, com os preços exclusivos que só saem durante a transmissão.</p>
+    <span class="intro-eyebrow" id="introEyebrow">Ao vivo agora</span>
+    <h1 id="introTitulo">A loja oficial da live.</h1>
+    <p id="introSubtitulo">Material novo e usado, revisto peça a peça, com os preços exclusivos que só saem durante a transmissão.</p>
   </section>
 
   <section class="highlights-section" id="highlightsSection" hidden>
@@ -797,6 +882,40 @@
     <p class="grid-note" data-loading-usado>A carregar produtos...</p>
   </section>
 </main>
+</div>
+
+<section class="dedicated-page" id="pageProdutos" hidden>
+  <div class="dedicated-page-head">
+    <h1>Produtos Novos</h1>
+    <a class="dedicated-back" href="#/">&larr; Voltar à loja</a>
+  </div>
+  <div class="product-grid" id="produtosPageGrid"><p class="grid-note">A carregar produtos...</p></div>
+</section>
+
+<section class="dedicated-page" id="pageUsados" hidden>
+  <div class="dedicated-page-head">
+    <h1>Produtos Usados</h1>
+    <a class="dedicated-back" href="#/">&larr; Voltar à loja</a>
+  </div>
+  <div class="product-grid" id="usadosPageGrid"><p class="grid-note">A carregar produtos...</p></div>
+</section>
+
+<section class="dedicated-page" id="pageDestaques" hidden>
+  <div class="dedicated-page-head">
+    <h1>Destaques</h1>
+    <a class="dedicated-back" href="#/">&larr; Voltar à loja</a>
+  </div>
+  <div class="product-grid" id="destaquesPageGrid"><p class="grid-note">A carregar produtos...</p></div>
+</section>
+
+<section class="dedicated-page" id="pageNovidades" hidden>
+  <div class="dedicated-page-head">
+    <h1>Novidades</h1>
+    <a class="dedicated-back" href="#/">&larr; Voltar à loja</a>
+  </div>
+  <p class="dedicated-page-sub">Os artigos adicionados nos últimos 14 dias.</p>
+  <div class="product-grid" id="novidadesPageGrid"><p class="grid-note">A carregar produtos...</p></div>
+</section>
 
 <div class="modal-overlay" id="modalOverlay"></div>
 <div class="checkout-modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle" aria-hidden="true">
@@ -981,15 +1100,15 @@
       </div>
       <div class="footer-col">
         <h3 class="footer-heading">Garantia PRO STOCK</h3>
-        <p class="footer-text">Material revisto e testado. Apoio ao cliente durante e após a Live.</p>
+        <p class="footer-text" id="footerGarantiaTexto">Material revisto e testado. Apoio ao cliente durante e após a Live.</p>
       </div>
       <div class="footer-col">
         <h3 class="footer-heading">Contactos Rápidos</h3>
-        <a class="footer-contact" href="tel:+351912345678"><svg aria-hidden="true"><use href="#i-phone"/></svg>912 345 678</a>
-        <a class="footer-contact" href="mailto:stockpro.pt@gmail.com"><svg aria-hidden="true"><use href="#i-mail"/></svg>stockpro.pt@gmail.com</a>
+        <a class="footer-contact" id="footerTelefoneLink" href="tel:+351912345678"><svg aria-hidden="true"><use href="#i-phone"/></svg><span id="footerTelefoneText">912 345 678</span></a>
+        <a class="footer-contact" id="footerEmailLink" href="mailto:stockpro.pt@gmail.com"><svg aria-hidden="true"><use href="#i-mail"/></svg><span id="footerEmailText">stockpro.pt@gmail.com</span></a>
       </div>
     </div>
-    <p class="footer-note">© 2026 PRO STOCK. Todos os artigos são verificados antes do envio. Preços válidos durante a transmissão em direto.</p>
+    <p class="footer-note" id="footerNota">© 2026 PRO STOCK. Todos os artigos são verificados antes do envio. Preços válidos durante a transmissão em direto.</p>
   </div>
 </footer>
 
@@ -1073,6 +1192,73 @@
 
   function formatEuro(n){
     return '€' + n.toFixed(2).replace('.', ',');
+  }
+
+  // ---- Conteúdo do site (textos + imagem de hero, editáveis no admin) ----
+  // PROGRAMADOR: Requer a migração 08-conteudo-site.sql (tabela "conteudo_site").
+  // Cada texto tem aqui um valor por omissão - se a tabela ainda não tiver essa
+  // linha (ou estiver vazia), a loja mostra sempre este texto, exatamente como
+  // já mostrava antes desta funcionalidade existir. Nada muda até o admin gravar
+  // alguma coisa na nova secção "Conteúdo do Site".
+  var SITE_CONTENT_DEFAULTS = {
+    banner_texto: 'Estamos em direto agora - aproveite as oportunidades antes que acabem.',
+    intro_eyebrow: 'Ao vivo agora',
+    intro_titulo: 'A loja oficial da live.',
+    intro_subtitulo: 'Material novo e usado, revisto peça a peça, com os preços exclusivos que só saem durante a transmissão.',
+    footer_garantia_texto: 'Material revisto e testado. Apoio ao cliente durante e após a Live.',
+    footer_telefone: '912 345 678',
+    footer_email: 'stockpro.pt@gmail.com',
+    footer_nota: '© 2026 PRO STOCK. Todos os artigos são verificados antes do envio. Preços válidos durante a transmissão em direto.'
+  };
+
+  function buildTelLink(telemovel){
+    var digits = String(telemovel || '').replace(/\D/g, '');
+    if (!digits) return '';
+    if (digits.length === 9){ digits = '351' + digits; }
+    else if (digits.length === 10 && digits.charAt(0) === '0'){ digits = '351' + digits.slice(1); }
+    return 'tel:+' + digits;
+  }
+
+  function applySiteContent(content){
+    document.getElementById('liveBannerText').textContent = content.banner_texto;
+    document.getElementById('introEyebrow').textContent = content.intro_eyebrow;
+    document.getElementById('introTitulo').textContent = content.intro_titulo;
+    document.getElementById('introSubtitulo').textContent = content.intro_subtitulo;
+    document.getElementById('footerGarantiaTexto').textContent = content.footer_garantia_texto;
+    document.getElementById('footerNota').textContent = content.footer_nota;
+
+    document.getElementById('footerTelefoneText').textContent = content.footer_telefone;
+    var telLink = document.getElementById('footerTelefoneLink');
+    var telHref = buildTelLink(content.footer_telefone);
+    if (telHref) telLink.setAttribute('href', telHref);
+
+    document.getElementById('footerEmailText').textContent = content.footer_email;
+    document.getElementById('footerEmailLink').setAttribute('href', 'mailto:' + content.footer_email);
+
+    var heroSection = document.getElementById('heroSection');
+    var heroTituloEl = document.getElementById('heroTitulo');
+    var heroSubtituloEl = document.getElementById('heroSubtitulo');
+    if (content.hero_imagem){
+      document.getElementById('heroImg').src = content.hero_imagem;
+      heroSection.hidden = false;
+      if (content.hero_titulo){ heroTituloEl.textContent = content.hero_titulo; heroTituloEl.hidden = false; }
+      else { heroTituloEl.hidden = true; }
+      if (content.hero_subtitulo){ heroSubtituloEl.textContent = content.hero_subtitulo; heroSubtituloEl.hidden = false; }
+      else { heroSubtituloEl.hidden = true; }
+    } else {
+      heroSection.hidden = true;
+    }
+  }
+
+  async function loadSiteContent(){
+    var content = Object.assign({}, SITE_CONTENT_DEFAULTS);
+    var result = await supabaseClient.from('conteudo_site').select('chave, valor');
+    if (!result.error && result.data){
+      result.data.forEach(function(row){
+        if (row.valor != null && row.valor !== '') content[row.chave] = row.valor;
+      });
+    }
+    applySiteContent(content);
   }
 
   function renderOrderSummary(){
@@ -1163,8 +1349,19 @@
     if (!images.length && p.imagem){ images = [String(p.imagem).trim()].filter(Boolean); }
     var mediaHtml = renderGalleryHtml(images, p.nome);
 
-    var discountBadge = p.etiqueta_desconto ? '<span class="badge discount">' + escapeHtml(p.etiqueta_desconto) + '</span>' : '';
+    // Stock (opcional): produtos sem esta coluna preenchida ("null") vendem-se sempre à
+    // vontade, exatamente como antes desta funcionalidade existir - só os que o admin
+    // preencheu é que passam a mostrar "Esgotado"/"Só restam X" e a limitar a quantidade.
+    var temStock = p.stock != null;
+    var stockNum = temStock ? Math.max(0, Number(p.stock) || 0) : null;
+    var isEsgotado = temStock && stockNum === 0;
+    var stockBaixo = temStock && stockNum > 0 && stockNum <= 5;
+    var maxQty = temStock ? Math.max(1, stockNum) : 99;
+
+    var discountBadge = (p.etiqueta_desconto && !isEsgotado) ? '<span class="badge discount">' + escapeHtml(p.etiqueta_desconto) + '</span>' : '';
+    var esgotadoBadge = isEsgotado ? '<span class="badge discount badge-esgotado">Esgotado</span>' : '';
     var stockNoteHtml = p.nota_stock ? '<p class="stock-note">' + escapeHtml(p.nota_stock) + '</p>' : '';
+    var stockBaixoHtml = stockBaixo ? '<p class="stock-note">Só ' + (stockNum === 1 ? 'resta 1 unidade' : ('restam ' + stockNum + ' unidades')) + '!</p>' : '';
     var oldPriceNum = Number(p.preco_antigo);
     var priceOldHtml = (p.preco_antigo != null && oldPriceNum > 0) ?
       '<span class="price-old">' + formatEuro(oldPriceNum) + '</span>' : '';
@@ -1175,28 +1372,34 @@
     var sizesHtml = sizeOpts.length ? renderVariantPicker('Tamanho', 'size', sizeOpts) : '';
     var colorsHtml = colorOpts.length ? renderVariantPicker('Cor', 'color', colorOpts) : '';
 
-    var qtyHtml = '<div class="variant-picker">' +
-      '<p class="variant-picker-label">Quantidade</p>' +
-      '<div class="qty-stepper">' +
-        '<button type="button" class="qty-btn qty-minus" aria-label="Diminuir quantidade">-</button>' +
-        '<span class="qty-value">1</span>' +
-        '<button type="button" class="qty-btn qty-plus" aria-label="Aumentar quantidade">+</button>' +
-      '</div>' +
-    '</div>';
+    var qtyHtml = isEsgotado ? '' : (
+      '<div class="variant-picker">' +
+        '<p class="variant-picker-label">Quantidade</p>' +
+        '<div class="qty-stepper" data-max-qty="' + maxQty + '">' +
+          '<button type="button" class="qty-btn qty-minus" aria-label="Diminuir quantidade">-</button>' +
+          '<span class="qty-value">1</span>' +
+          '<button type="button" class="qty-btn qty-plus" aria-label="Aumentar quantidade">+</button>' +
+        '</div>' +
+      '</div>'
+    );
 
     var buyBtnAttrs = 'data-id="' + escapeHtml(p.id) + '" data-name="' + escapeHtml(p.nome) + '" data-price="' + (Number(p.preco) || 0) + '"' +
       (sizeOpts.length ? ' data-requires-size="true"' : '') +
       (colorOpts.length ? ' data-requires-color="true"' : '');
 
+    var buyBtnHtml = isEsgotado ?
+      '<button class="buy-btn buy-btn-esgotado" type="button" disabled>Esgotado</button>' :
+      '<button class="buy-btn" ' + buyBtnAttrs + '>Comprar Agora</button>';
+
     return '<article class="product-card" data-product-id="' + escapeHtml(p.id) + '">' +
       '<div class="product-media" data-gallery-index="0"><span class="badge ' + badgeClass + '">' + badgeText + '</span>' +
-        (isUsado ? usedStateBadgeHtml(p) : '') + discountBadge + mediaHtml + favBtnHtml(p) + '</div>' +
+        (isUsado ? usedStateBadgeHtml(p) : '') + esgotadoBadge + discountBadge + mediaHtml + favBtnHtml(p) + '</div>' +
       '<div class="product-info">' +
         '<h3>' + escapeHtml(p.nome) + '</h3>' +
-        stockNoteHtml +
+        stockNoteHtml + stockBaixoHtml +
         '<div class="price-row">' + priceOldHtml + '<span class="price">' + formatEuro(Number(p.preco) || 0) + '</span></div>' +
         descHtml + sizesHtml + colorsHtml + qtyHtml +
-        '<button class="buy-btn" ' + buyBtnAttrs + '>Comprar Agora</button>' +
+        buyBtnHtml +
       '</div>' +
     '</article>';
   }
@@ -1287,6 +1490,7 @@
     }
     allProducts = result.data;
     renderProductGrids();
+    renderActiveDedicatedPage();
   }
 
   // Mostra o carrossel "Destaques" com os produtos que o admin marcou para aparecer em
@@ -1341,6 +1545,140 @@
     novoGrid.innerHTML = novoHtml || emptyMsg;
     usadoGrid.innerHTML = usadoHtml || emptyMsg;
   }
+
+  // ---- Páginas dedicadas (Produtos/Usados/Destaques/Novidades) - navegação por "#/rota",
+  // cada uma com o seu próprio link para poderes partilhar diretamente essa categoria. A
+  // página inicial mantém-se exatamente como está - estas são vistas adicionais, acedidas
+  // pelo menu "page-nav" logo abaixo do cabeçalho. ----
+  var DEDICATED_ROUTES = ['novidades', 'destaques', 'produtos', 'usados'];
+
+  // Título e descrição por página - melhora o que aparece na aba do browser e, quando
+  // alguém partilha um link já dentro de uma destas páginas (ex.: .../#/usados), o que
+  // certas apps mostram na pré-visualização ao abrir esse link (os motores de busca e a
+  // maioria das redes sociais só leem as etiquetas "og:" da página inicial, não estas -
+  // ver nota no ficheiro SEO-e-partilha-leia-me.txt).
+  var ROUTE_META = {
+    '': {
+      title: 'PRO STOCK',
+      desc: 'PRO STOCK - loja online de live-sale em Portugal: produtos novos e usados, rifas com números e entregas rápidas. Vê as novidades, os destaques e o stock disponível.'
+    },
+    'novidades': {
+      title: 'Novidades - PRO STOCK',
+      desc: 'As novidades mais recentes da PRO STOCK: produtos adicionados nos últimos 14 dias.'
+    },
+    'destaques': {
+      title: 'Destaques - PRO STOCK',
+      desc: 'Os produtos em destaque da PRO STOCK, escolhidos por nós.'
+    },
+    'produtos': {
+      title: 'Produtos - PRO STOCK',
+      desc: 'Todos os produtos novos disponíveis na PRO STOCK.'
+    },
+    'usados': {
+      title: 'Usados - PRO STOCK',
+      desc: 'Produtos em segunda mão disponíveis na PRO STOCK, com estado e defeitos sempre indicados.'
+    }
+  };
+
+  function currentRoute(){
+    var raw = (location.hash || '').replace(/^#\/?/, '').split('?')[0].split('/')[0];
+    return DEDICATED_ROUTES.indexOf(raw) > -1 ? raw : '';
+  }
+
+  function applyRouteMeta(route){
+    var meta = ROUTE_META[route] || ROUTE_META[''];
+    document.title = meta.title;
+    var url = 'https://prostock.pt/' + (route ? '#/' + route : '');
+    ['metaDescription'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.setAttribute('content', meta.desc);
+    });
+    ['ogTitle', 'twitterTitle'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.setAttribute('content', meta.title + (route ? '' : ' - Live-sale de produtos novos e usados'));
+    });
+    ['ogDescription', 'twitterDescription'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.setAttribute('content', meta.desc);
+    });
+    var canonical = document.getElementById('canonicalLink');
+    if (canonical) canonical.setAttribute('href', url);
+    var ogUrl = document.getElementById('ogUrl');
+    if (ogUrl) ogUrl.setAttribute('content', url);
+  }
+
+  function renderDedicatedGrid(gridId, lista, emptyMsg){
+    var grid = document.getElementById(gridId);
+    if (!grid) return;
+    if (!lista.length){
+      grid.innerHTML = '<p class="grid-note">' + emptyMsg + '</p>';
+      return;
+    }
+    grid.innerHTML = lista.map(function(p){
+      var isUsado = String(p.condicao || '').trim().toLowerCase() === 'usado';
+      return renderProductCard(p, isUsado);
+    }).join('');
+  }
+
+  function renderPageProdutos(){
+    var lista = allProducts.filter(function(p){ return String(p.condicao || '').trim().toLowerCase() !== 'usado'; });
+    renderDedicatedGrid('produtosPageGrid', lista, 'Ainda não há produtos novos disponíveis.');
+  }
+  function renderPageUsados(){
+    var lista = allProducts.filter(function(p){ return String(p.condicao || '').trim().toLowerCase() === 'usado'; });
+    renderDedicatedGrid('usadosPageGrid', lista, 'Ainda não há produtos usados disponíveis.');
+  }
+  function renderPageDestaques(){
+    var lista = allProducts.filter(function(p){ return !!p.destaque; });
+    renderDedicatedGrid('destaquesPageGrid', lista, 'Ainda não há produtos em destaque.');
+  }
+  function renderPageNovidades(){
+    // PROGRAMADOR: Requer a coluna "criado_em" (timestamptz) na tabela "produtos" - ver
+    // migração 10-novidades.sql. Sem ela, esta página fica sempre vazia.
+    var limite = Date.now() - 14 * 24 * 60 * 60 * 1000;
+    var lista = allProducts.filter(function(p){
+      return p.criado_em && new Date(p.criado_em).getTime() >= limite;
+    }).sort(function(a, b){ return new Date(b.criado_em) - new Date(a.criado_em); });
+    renderDedicatedGrid('novidadesPageGrid', lista, 'Sem novidades nos últimos 14 dias.');
+  }
+
+  function renderActiveDedicatedPage(){
+    var route = currentRoute();
+    if (route === 'novidades') renderPageNovidades();
+    else if (route === 'destaques') renderPageDestaques();
+    else if (route === 'produtos') renderPageProdutos();
+    else if (route === 'usados') renderPageUsados();
+  }
+
+  function applyRoute(){
+    var route = currentRoute();
+    applyRouteMeta(route);
+    var homeView = document.getElementById('homeView');
+    if (homeView) homeView.hidden = route !== '';
+    ['novidades', 'destaques', 'produtos', 'usados'].forEach(function(key){
+      var section = document.getElementById('page' + key.charAt(0).toUpperCase() + key.slice(1));
+      if (section) section.hidden = route !== key;
+    });
+    document.querySelectorAll('.page-nav-link').forEach(function(link){
+      if (link.dataset.route === route) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
+    renderActiveDedicatedPage();
+  }
+
+  // Muda de rota de forma síncrona (não espera pelo evento "hashchange", que só chega
+  // no fim da mesma volta do event loop) - usado pelos botões da barra inferior, para a
+  // vista ficar já correta antes de continuarem a fazer scroll/focus.
+  function navigateTo(route){
+    var target = route ? '#/' + route : '#/';
+    if (location.hash !== target) location.hash = target;
+    applyRoute();
+  }
+
+  window.addEventListener('hashchange', function(){
+    applyRoute();
+    window.scrollTo(0, 0);
+  });
 
   function toggleFavorite(id){
     id = String(id);
@@ -1450,8 +1788,14 @@
       if (!qtyCard) return;
       var qtyValueEl = qtyCard.querySelector('.qty-value');
       if (!qtyValueEl) return;
+      // Quando o produto tem controlo de stock, "data-max-qty" (no próprio qty-stepper)
+      // impede escolher mais unidades do que as que existem - sem stock controlado, o
+      // limite mantém-se 99, tal como sempre foi.
+      var qtyStepperEl = qtyBtn.closest('.qty-stepper');
+      var maxQtyAttr = qtyStepperEl ? parseInt(qtyStepperEl.dataset.maxQty, 10) : NaN;
+      var maxAllowed = isNaN(maxQtyAttr) ? 99 : Math.max(1, maxQtyAttr);
       var qtyNow = parseInt(qtyValueEl.textContent, 10) || 1;
-      if (qtyBtn.classList.contains('qty-plus')) qtyNow = Math.min(qtyNow + 1, 99);
+      if (qtyBtn.classList.contains('qty-plus')) qtyNow = Math.min(qtyNow + 1, maxAllowed);
       else qtyNow = Math.max(qtyNow - 1, 1);
       qtyValueEl.textContent = String(qtyNow);
       return;
@@ -1636,6 +1980,13 @@
       if (resposta && (resposta.erro === 'numeros_indisponiveis' || resposta.erro === 'numeros_indisponiveis_concorrencia')){
         showToast('Um ou mais números da rifa deixaram de estar disponíveis. Escolha novos números e tente novamente.');
         await refreshRaffleSummary();
+      } else if (resposta && resposta.erro === 'stock_insuficiente'){
+        var nomesSemStock = (resposta.produtos || []).map(function(p){ return p.nome; }).join(', ');
+        showToast(nomesSemStock ? ('Já não há stock suficiente de: ' + nomesSemStock) : 'Já não há stock suficiente para esta encomenda.');
+        await loadProducts();
+      } else if (resposta && resposta.erro === 'stock_insuficiente_concorrencia'){
+        showToast('Outro cliente acabou de comprar as últimas unidades. Reveja o carrinho e tente novamente.');
+        await loadProducts();
       } else {
         showToast('Não foi possível confirmar a encomenda. Tente novamente.');
       }
@@ -1772,7 +2123,8 @@
     confirmada: { label: 'Confirmada', cls: 'state-confirmada' },
     em_preparacao: { label: 'Em preparação', cls: 'state-preparacao' },
     enviada: { label: 'Enviada', cls: 'state-enviada' },
-    entregue: { label: 'Entregue', cls: 'state-entregue' }
+    entregue: { label: 'Entregue', cls: 'state-entregue' },
+    cancelada: { label: 'Cancelada', cls: 'state-cancelada' }
   };
 
   function openAccountModal(){
@@ -1944,17 +2296,20 @@
     bottomNavButtons.forEach(function(b){ b.classList.toggle('active', b === activeBtn); });
   }
   navHome.addEventListener('click', function(){
+    navigateTo('');
     setActiveNav(navHome);
     if (showOnlyFavorites){ showOnlyFavorites = false; renderProductGrids(); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
   navSearch.addEventListener('click', function(){
+    navigateTo('');
     setActiveNav(navSearch);
     if (showOnlyFavorites){ showOnlyFavorites = false; renderProductGrids(); }
     document.querySelector('.search-bar').scrollIntoView({ behavior: 'smooth', block: 'center' });
     searchInput.focus();
   });
   navFavorites.addEventListener('click', function(){
+    navigateTo('');
     showOnlyFavorites = !showOnlyFavorites;
     setActiveNav(showOnlyFavorites ? navFavorites : navHome);
     renderProductGrids();
@@ -2046,7 +2401,7 @@
   }
 
   async function refreshRaffleSummary(){
-    var result = await supabaseClient.from('rifas').select('numero, estado');
+    var result = await supabaseClient.from('rifas').select('numero, estado').order('numero');
     if (result.error || !result.data){
       raffleSoldLabel.textContent = 'Números indisponíveis de momento';
       return;
@@ -2201,7 +2556,9 @@
 
   loadProducts();
   loadRaffleConfig();
+  loadSiteContent();
   releaseExpiredRaffleLocksInBackground().then(refreshRaffleSummary);
   renderOrderSummary();
+  applyRoute();
 })();
 </script>
