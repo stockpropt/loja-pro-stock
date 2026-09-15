@@ -14,6 +14,14 @@
 <meta name="twitter:title" content="PRO STOCK - Live-sale de produtos novos e usados" id="twitterTitle">
 <meta name="twitter:description" content="Produtos novos e usados, rifas com números e entregas rápidas em Portugal." id="twitterDescription">
 <meta name="twitter:image" content="https://prostock.pt/imagens/og-image.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1d1d1f">
+<link rel="icon" href="imagens/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="imagens/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PRO STOCK">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Public+Sans:wght@400;500;600;700&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -713,6 +721,34 @@
   }
   .toast.show{ opacity:1; transform:translate(-50%,0); }
 
+  /* ---------- Banner de instalação (PWA) ---------- */
+  .install-banner{
+    position:fixed; left:50%; bottom:20px; transform:translateX(-50%);
+    width:min(460px,calc(100% - 32px)); z-index:65;
+    background:var(--card-bg); border:1px solid var(--border); border-radius:18px;
+    box-shadow:var(--shadow-md);
+  }
+  @media (max-width:760px){
+    .install-banner{ bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 12px); }
+  }
+  .install-banner-inner{ display:flex; align-items:center; gap:12px; padding:14px 14px 14px 18px; }
+  .install-banner-text{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .install-banner-text strong{ font-size:.95rem; font-weight:800; }
+  .install-banner-text span{ font-size:.82rem; color:var(--gray-600); line-height:1.4; }
+  .install-banner-actions{ flex:none; display:flex; align-items:center; gap:6px; }
+  .install-banner-btn{
+    border:none; background:var(--accent); color:#fff; font-weight:700; font-size:.86rem;
+    padding:0 16px; min-height:40px; border-radius:999px; cursor:pointer; white-space:nowrap;
+    transition:background .15s ease;
+  }
+  .install-banner-btn:hover{ background:var(--accent-hover); }
+  .install-banner-close{
+    flex:none; width:32px; height:32px; border-radius:50%; border:none; background:var(--gray-100);
+    color:var(--gray-600); cursor:pointer; font-size:1.05rem; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .install-banner-close:hover{ background:var(--gray-200); }
+
   /* ---------- Footer ---------- */
   footer{ background:#000; color:#f5f5f7; border-top:1px solid rgba(255,255,255,.12); margin-top:24px; }
   .footer-inner{ max-width:1180px; margin:0 auto; padding:48px 20px 32px; }
@@ -1070,6 +1106,19 @@
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="install-banner" id="installBanner" hidden role="complementary" aria-label="Instalar aplicação">
+  <div class="install-banner-inner">
+    <div class="install-banner-text">
+      <strong>Instala a PRO STOCK</strong>
+      <span id="installBannerSub">Acesso mais rápido, direto do ecrã principal do telemóvel ou computador.</span>
+    </div>
+    <div class="install-banner-actions">
+      <button type="button" class="install-banner-btn" id="installBannerBtn">Instalar</button>
+      <button type="button" class="install-banner-close" id="installBannerClose" aria-label="Fechar">&times;</button>
+    </div>
+  </div>
+</div>
 
 <nav class="bottom-nav" aria-label="Navegação principal">
   <button type="button" class="bottom-nav-item active" id="navHome">
@@ -2553,6 +2602,85 @@
       }
     })
     .subscribe();
+
+  // ---- PWA: registo do service worker + banner para instalar como app ----
+  if ('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('/sw.js').catch(function(err){ console.error(err); });
+    });
+  }
+
+  var installBanner = document.getElementById('installBanner');
+  var installBannerBtn = document.getElementById('installBannerBtn');
+  var installBannerClose = document.getElementById('installBannerClose');
+  var installBannerSub = document.getElementById('installBannerSub');
+  var deferredInstallPrompt = null;
+  var INSTALL_DISMISS_KEY = 'prostock_install_dismissed';
+
+  // O browser guarda por si só se a app já está instalada/foi recusada recentemente, mas o
+  // "localStorage" aqui serve só para não voltar a mostrar o banner logo a seguir a alguém
+  // o ter fechado - falha em silêncio se o browser bloquear o acesso (ex.: janela privada).
+  function installFoiFechadoRecentemente(){
+    try {
+      var quando = localStorage.getItem(INSTALL_DISMISS_KEY);
+      if (!quando) return false;
+      return (Date.now() - parseInt(quando, 10)) < 14 * 24 * 60 * 60 * 1000;
+    } catch (err) { return false; }
+  }
+
+  function appJaInstalada(){
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  }
+
+  function isIos(){
+    return /iphone|ipad|ipod/i.test(window.navigator.userAgent || '');
+  }
+
+  function showInstallBanner(modoIos){
+    if (!installBanner || appJaInstalada() || installFoiFechadoRecentemente()) return;
+    if (modoIos){
+      installBannerSub.textContent = 'No iPhone/iPad: toca em Partilhar e depois em "Adicionar ao Ecrã Principal".';
+      installBannerBtn.hidden = true;
+    }
+    installBanner.hidden = false;
+  }
+
+  // Chrome/Edge/Android disparam este evento quando a app cumpre os requisitos para ser
+  // instalada - guarda-se aqui para poder ser acionado mais tarde pelo botão "Instalar".
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    showInstallBanner(false);
+  });
+
+  // No Safari do iOS este evento não existe - não há forma automática de mostrar o instalador
+  // nativo, por isso mostra-se sempre a instrução manual, com um pequeno atraso para não
+  // competir com o resto da página a carregar.
+  if (isIos() && !appJaInstalada()){
+    setTimeout(function(){ showInstallBanner(true); }, 2500);
+  }
+
+  if (installBannerBtn){
+    installBannerBtn.addEventListener('click', async function(){
+      if (!deferredInstallPrompt) return;
+      installBanner.hidden = true;
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+    });
+  }
+
+  if (installBannerClose){
+    installBannerClose.addEventListener('click', function(){
+      installBanner.hidden = true;
+      try { localStorage.setItem(INSTALL_DISMISS_KEY, String(Date.now())); } catch (err) {}
+    });
+  }
+
+  window.addEventListener('appinstalled', function(){
+    if (installBanner) installBanner.hidden = true;
+    try { localStorage.setItem(INSTALL_DISMISS_KEY, String(Date.now())); } catch (err) {}
+  });
 
   loadProducts();
   loadRaffleConfig();
